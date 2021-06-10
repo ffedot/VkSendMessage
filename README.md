@@ -12,7 +12,7 @@ LOGIN=your_login
 PASSWORD=your_password
 
 start main.py, after login need write user_id
-
+![alt text](get_id.png "get user id")
 
 ## Licence
 
