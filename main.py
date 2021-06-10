@@ -9,7 +9,7 @@ vk_session = vk_api.VkApi(LOGIN, PASSWORD)
 vk_session.auth()
 vk = vk_session.get_api()
 
-print(f"Выполнен вход  в аккаунт {vk.users.get(name_case='gen')[0]['first_name']} "
+print(f"Выполнен вход в аккаунт {vk.users.get(name_case='gen')[0]['first_name']} "
       f"{vk.users.get(name_case='gen')[0]['last_name']}")
 
 
