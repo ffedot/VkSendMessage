@@ -1,0 +1,2 @@
+vk_messages==0.2
+python-dotenv==0.17.1
