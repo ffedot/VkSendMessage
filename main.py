@@ -3,7 +3,7 @@ from vk_messages.utils import get_random
 from settings import LOGIN, PASSWORD
 
 
-messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
+messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False)
 print("Вход выполнен")
 from_id = int(messages.cookies_final['l'])
 
