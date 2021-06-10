@@ -1,12 +1,18 @@
 from vk_messages import MessagesAPI
 from vk_messages.utils import get_random
 from settings import LOGIN, PASSWORD
-
+import vk_api
 
 
 messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False)
+vk_session = vk_api.VkApi(LOGIN, PASSWORD)
+vk_session.auth()
 print("Вход выполнен")
-from_id = int(messages.cookies_final['l'])
+
+vk = vk_session.get_api()
+
+
+from_id = vk.users.get(name_case='gen')[0]['id']
 
 print('Вводите ID пользователей, для прекращения ввода введите 0')
 user_id = input()
@@ -29,7 +35,11 @@ for user in user_id_set:
         continue
     user_id_list.append(user)
 
-print(f'Бот активирован для пользователей {user_id_list}')
+for user in user_id_list:
+    first_name = vk.users.get(name_case='gen', user_ids=user)[0]['first_name']
+    last_name = vk.users.get(name_case='gen', user_ids=user)[0]['last_name']
+    print(f'Бот активирован для {first_name} {last_name}')
+
 while True:
     for user_id in user_id_list:
         history = messages.method('messages.getHistory', user_id=user_id, count=1)
