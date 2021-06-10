@@ -7,9 +7,10 @@ import vk_api
 messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False)
 vk_session = vk_api.VkApi(LOGIN, PASSWORD)
 vk_session.auth()
-print("Вход выполнен")
-
 vk = vk_session.get_api()
+
+print(f"Выполнен вход  в аккаунт {vk.users.get(name_case='gen')[0]['first_name']} "
+      f"{vk.users.get(name_case='gen')[0]['last_name']}")
 
 
 from_id = vk.users.get(name_case='gen')[0]['id']
