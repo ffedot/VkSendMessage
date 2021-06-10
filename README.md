@@ -3,7 +3,7 @@
 
 # Install
 
-Execute command "pip install -r requirements.txt"
+Execute command "pip install -r requirements.txt" in terminal
 
 # First Start
 
