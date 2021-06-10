@@ -3,7 +3,7 @@
 
 # Install
 
-Execute command "pip install -r requirements.txt"
+Execute command "pip install -r requirements.txt" in terminal
 
 # First Start
 
@@ -13,7 +13,3 @@ PASSWORD=your_password
 
 start main.py, after login need write user_id from url  
 ![alt text](get_id.png "get user id")
-
-## Licence
-
-GNU GPLv3q
