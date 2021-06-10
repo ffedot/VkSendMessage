@@ -8,7 +8,7 @@ Execute command "pip install -r requirements.txt"
 # First Start
 
 create .env file and set:  
-LOGIN=your_login
+LOGIN=your_login  
 PASSWORD=your_password
 
 start main.py, after login need write user_id from url  
