@@ -13,3 +13,7 @@ PASSWORD=your_password
 
 start main.py, after login need write user_id from url  
 ![alt text](get_id.png "get user id")
+
+# Create .exe
+
+Execute command "python setup.py build" in terminal
