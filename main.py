@@ -41,7 +41,7 @@ def do_request(id_user, from_id):
             if 'tiktok' in last_msg_text.lower():
                 #  Получение никнейма тикток отправителя
                 if get_ticktok_nickname(last_msg_text) == 'holodova0':
-                    last_msg_text = POLINA_TT_KEY
+                    last_msg_text = TT_KEY
                 else:
                     last_msg_text = 'tiktok'
             if last_msg_text.lower() in answers:
