@@ -1,6 +1,6 @@
-import os
+from os import environ
 from dotenv import load_dotenv
 
 load_dotenv('.env')
-LOGIN = os.environ['LOGIN']
-PASSWORD = os.environ['PASSWORD']
+LOGIN = environ['LOGIN']
+PASSWORD = environ['PASSWORD']

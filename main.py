@@ -2,6 +2,7 @@ from vk_messages import MessagesAPI
 from vk_messages.utils import get_random
 from settings import LOGIN, PASSWORD
 import vk_api
+from datetime import datetime
 
 
 messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False)
@@ -41,6 +42,7 @@ for user in user_id_list:
     last_name = vk.users.get(name_case='gen', user_ids=user)[0]['last_name']
     print(f'Бот активирован для {first_name} {last_name}')
 
+
 while True:
     for user_id in user_id_list:
         history = messages.method('messages.getHistory', user_id=user_id, count=1)
@@ -48,8 +50,13 @@ while True:
         last_msg_id = history['items'][0]['from_id']
         if last_msg_id != from_id:
             if last_msg_text.lower() == message_to_search.lower():
+                first_name = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]
+                last_name = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["last_name"]
                 messages.method('messages.send', peer_id=user_id, message=message_to_send, random_id=get_random(),
                                 reply_to=history['items'][0]['id'])
-                print(f'Отправлено сообщение "{message_to_send}" '
-                      f'{vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]} '
-                      f'{vk.users.get(name_case="dat", user_id=last_msg_id)[0]["last_name"]}')
+                print(f'Отправлено сообщение "{message_to_send}" {first_name} {last_name}')
+                logfile = open('log.txt', 'a+', encoding='utf-8')
+                logfile.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
+                logfile.write(f'Отправлено сообщение "{message_to_send}" {first_name} {last_name}, ID: {last_msg_id}\n')
+                logfile.close()
+
