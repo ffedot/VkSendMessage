@@ -44,7 +44,7 @@ def get_answers():
 
 def get_chats():
     user_id_set = set()
-    with open('id.txt', 'r', encoding='utf-8') as file:
+    with open('ids.txt', 'r', encoding='utf-8') as file:
         for line in file:
             if line[0].strip() == '#':
                 continue

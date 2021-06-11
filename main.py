@@ -1,6 +1,6 @@
 from vk_messages import MessagesAPI
 from vk_messages.utils import get_random
-from settings import LOGIN, PASSWORD, POLINA_TT_KEY
+from settings import LOGIN, PASSWORD, TT_KEY
 from datetime import datetime
 from time import sleep
 from get_objects import *
@@ -10,7 +10,7 @@ import vk_api
 def create_help():
     help_msg = ''
     for k in answers.keys():
-        if k == POLINA_TT_KEY:
+        if k == TT_KEY:
             continue
         help_msg += k
         help_msg += '\n'
@@ -58,7 +58,7 @@ def do_request(id_user, from_id):
                 logfile.close()
 
 
-messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False)
+messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
 vk_session = vk_api.VkApi(LOGIN, PASSWORD)
 vk_session.auth()
 vk = vk_session.get_api()

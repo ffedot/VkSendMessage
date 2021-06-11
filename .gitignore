@@ -1,6 +1,8 @@
 .env
 *.pickle
 /build/
+/.idea/
 log.txt
 answers.txt
-id.txt
+ids.txt
+vk_config.v2.json
