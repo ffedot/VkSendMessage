@@ -3,10 +3,11 @@ from cx_Freeze import setup, Executable
 
 executables = [Executable('main.py', target_name='vkSendMessage.exe')]
 
-excludes = ['pygame', 'unittest', 'tkinter', 'numpy', 'asyncio', 'concurrent', 'ctypes',
-            'distutils', 'msilib', 'pkg_resources', 'pycparser', 'pydoc_data', 'xml', 'xmlrpc']
+excludes = ['pygame', 'unittest', 'tkinter', 'numpy', 'asyncio', 'concurrent', 'ctypes']
 
-include_files = ['.env']
+#excludes = ['pygame', 'unittest', 'tkinter', 'numpy', 'asyncio', 'concurrent', 'ctypes',
+#            'distutils', 'msilib', 'pkg_resources', 'pycparser', 'pydoc_data']
+include_files = ['.env', 'answers.txt', 'ids.txt']
 
 
 options = {'build_exe': {
@@ -19,7 +20,7 @@ options = {'build_exe': {
 
 setup(name='vkSendMessage',
       version='1.0',
-      description='отвечаем на нет ты',
+      description='отвечаем на сообщения',
       executables=executables,
       options=options
       )
