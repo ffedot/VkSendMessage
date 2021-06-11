@@ -11,5 +11,9 @@ create .env file and set:
 LOGIN=your_login  
 PASSWORD=your_password
 
+# Create .exe
+
+Execute command "python setup.py build" in terminal
+
 start main.py, after login need write user_id from url  
 ![alt text](get_id.png "get user id")
