@@ -31,7 +31,7 @@ def do_request(id_user, from_id):
             continue
         #  Распечатка всех возможных команд
         if last_msg_text.lower() == '!команды':
-            messages.method('messages.send', peer_id=id_user, message=create_help, random_id=get_random(),
+            messages.method('messages.send', peer_id=id_user, message=create_help(), random_id=get_random(),
                             reply_to=msg_id)
             msg_ids_set.add(msg_id)
             break
