@@ -47,6 +47,9 @@ while True:
         last_msg_text = history['items'][0]['text']
         last_msg_id = history['items'][0]['from_id']
         if last_msg_id != from_id:
-            if last_msg_text == message_to_search:
-                messages.method('messages.send', user_id=user_id, message=message_to_send, random_id=get_random())
-                print(f'Отправлено сообщение "{message_to_send}" пользователю с ID {user_id}')
+            if last_msg_text.lower() == message_to_search.lower():
+                messages.method('messages.send', peer_id=user_id, message=message_to_send, random_id=get_random(),
+                                reply_to=history['items'][0]['id'])
+                print(f'Отправлено сообщение "{message_to_send}" '
+                      f'{vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]} '
+                      f'{vk.users.get(name_case="dat", user_id=last_msg_id)[0]["last_name"]}')
