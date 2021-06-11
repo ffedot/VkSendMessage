@@ -9,7 +9,7 @@ Execute command "pip install -r requirements.txt" in terminal
 
 create .env file and set:  
 LOGIN=your_login  
-PASSWORD=your_password
+PASSWORD=your_password  
 TT_KEY=your_any_message
 
 create folder "sessions"
