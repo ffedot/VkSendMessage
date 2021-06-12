@@ -83,7 +83,8 @@ def get_key(msg: str, answers: dict):
             random_ans.add(i)
     for i in msg_list:
         if '&' in i:
-            random_ans.add(i[i.find('&'):i.find(';')])
+            if i[i.find('&'):i.find(';')] in answers:
+                random_ans.add(i[i.find('&'):i.find(';')])
     if len(random_ans) != 0:
         return choice(list(random_ans)).lower()
     return False
