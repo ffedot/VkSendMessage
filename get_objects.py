@@ -77,14 +77,17 @@ def no_spaces(s):
 
 def get_key(msg: str, answers: dict):
     random_ans = set()
-    msg_list = msg.split(' ')
-    for i in msg_list:
-        if i.lower() in answers:
-            random_ans.add(i)
-    for i in msg_list:
-        if '&' in i:
-            if i[i.find('&'):i.find(';')] in answers:
-                random_ans.add(i[i.find('&'):i.find(';')])
+    if msg not in answers:
+        msg_list = msg.split(' ')
+        for i in msg_list:
+            if i.lower() in answers:
+                random_ans.add(i)
+        for i in msg_list:
+            if '&' in i:
+                if i[i.find('&'):i.find(';')] in answers:
+                    random_ans.add(i[i.find('&'):i.find(';')])
+    else:
+        return msg
     if len(random_ans) != 0:
         return choice(list(random_ans)).lower()
     return False
