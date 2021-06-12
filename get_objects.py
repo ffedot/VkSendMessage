@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 from requests import get, exceptions
+from settings import TT_KEY
+from random import choice
 
 
 def get_chats():
@@ -20,6 +22,8 @@ def get_ticktok_nickname(url: str):
     try:
         req = get(url, headers=headers)
     except exceptions.MissingSchema:
+        return
+    except exceptions.InvalidURL:
         return
     src = req.text
 
@@ -71,3 +75,15 @@ def no_spaces(s):
     return t
 
 
+def get_key(msg: str, answers: dict):
+    random_ans = set()
+    msg_list = msg.split(' ')
+    for i in msg_list:
+        if i.lower() in answers:
+            random_ans.add(i)
+    for i in msg_list:
+        if '&' in i:
+            random_ans.add(i[i.find('&'):i.find(';')])
+    if len(random_ans) != 0:
+        return choice(list(random_ans)).lower()
+    return False
