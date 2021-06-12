@@ -2,6 +2,16 @@ from bs4 import BeautifulSoup
 from requests import get, exceptions
 
 
+def get_chats():
+    user_id_set = set()
+    with open('ids.txt', 'r', encoding='utf-8') as file:
+        for line in file:
+            if line[0].strip() == '#':
+                continue
+            user_id_set.add(line.strip())
+    return user_id_set
+
+
 def get_ticktok_nickname(url: str):
     headers = {
         'Accept': '*/*',
@@ -38,15 +48,26 @@ def get_answers():
             if line[0].strip() == '#':
                 continue
             s = line.strip().split(':')
-            answers[s[0][:-1]] = s[1][1:]
+            temp = edit_dict(s[1][1:])
+            if isinstance(temp, list):
+                answers[s[0][:-1]] = temp
+            else:
+                answers[s[0][:-1]] = s[1][1:]
     return answers
 
 
-def get_chats():
-    user_id_set = set()
-    with open('ids.txt', 'r', encoding='utf-8') as file:
-        for line in file:
-            if line[0].strip() == '#':
-                continue
-            user_id_set.add(line.strip())
-    return user_id_set
+def edit_dict(ans):
+    if ans[0] in ['[', ']'] and ans [-1] in ['[', ']']:
+        return no_spaces(ans[1:-1].split(';'))
+
+
+def no_spaces(s):
+    t = list()
+    for i in s:
+        if i[0] == ' ':
+            t.append(i[1:])
+            continue
+        t.append(i)
+    return t
+
+

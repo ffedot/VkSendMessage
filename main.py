@@ -2,7 +2,7 @@ from vk_messages import MessagesAPI
 from vk_messages.utils import get_random
 from settings import LOGIN, PASSWORD, TT_KEY
 from datetime import datetime
-from time import sleep
+from random import choice
 from get_objects import *
 import vk_api
 
@@ -45,15 +45,20 @@ def do_request(id_user, from_id):
                 else:
                     last_msg_text = 'tiktok'
             if last_msg_text.lower() in answers:
+                #  Если по ключу находится список, то мы выбираем случайный его элемент
+                if isinstance(answers[last_msg_text.lower()], list):
+                    message = choice(answers[last_msg_text.lower()])
+                else:
+                    message = answers[last_msg_text.lower()]
                 firstname = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]
                 lastname = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["last_name"]
-                messages.method('messages.send', peer_id=id_user, message=answers[last_msg_text.lower()],
+                messages.method('messages.send', peer_id=id_user, message=message,
                                 random_id=get_random(), reply_to=msg_id)
                 msg_ids_set.add(msg_id)
-                print(f'Отправлено сообщение "{answers[last_msg_text.lower()]}" {firstname} {lastname}')
+                print(f'Отправлено сообщение "{message}" {firstname} {lastname}')
                 logfile = open('log.txt', 'a+', encoding='utf-8')
                 logfile.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
-                logfile.write(f'Отправлено сообщение "{answers[last_msg_text.lower()]}" {firstname} {lastname}, '
+                logfile.write(f'Отправлено сообщение "{message}" {firstname} {lastname}, '
                               f'ID: {last_msg_id}\n')
                 logfile.close()
 
@@ -96,4 +101,3 @@ for user in correct_user_id_set:
 while True:
     for usr_id in correct_user_id_set:
         do_request(usr_id, my_id)
-    sleep(1)

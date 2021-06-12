@@ -3,10 +3,11 @@ from cx_Freeze import setup, Executable
 
 executables = [Executable('main.py', target_name='vkSendMessage.exe')]
 
-#excludes = ['pygame', 'unittest', 'tkinter', 'numpy']
+
 
 excludes = ['pygame', 'unittest', 'tkinter', 'numpy', 'asyncio', 'concurrent', 'ctypes',
             'distutils', 'msilib', 'pkg_resources', 'pycparser', 'pydoc_data']
+
 include_files = ['.env', 'answers.txt', 'ids.txt', 'sessions']
 
 
