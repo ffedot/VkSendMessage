@@ -1,16 +1,15 @@
 from vk_messages import MessagesAPI, vk_messages
 from vk_messages.utils import get_random
-from settings import LOGIN, PASSWORD
-from datetime import datetime
+from settings import LOGIN, PASSWORD, TT_KEY
 from get_objects import *
 from sys import exit
-from os import listdir
-from time import sleep
+from time import sleep, time
+from threading import Thread
 import vk_api
 
 
 def get_img(path):
-    image = 'mems/'
+    image = 'memes/'
     image += choice(path)
     attachments = list()
     upload_image = upload.photo_messages(photos=image)[0]
@@ -28,7 +27,7 @@ def create_help():
     return help_msg
 
 
-def do_request(id_user, from_id):
+def do_request(id_user):
     #  Получаем 5 последних сообщений с пользователем id_user
     history = messages.method('messages.getHistory', user_id=id_user, count=5)
     all_msg_logs = open('all_msg_logs.txt', 'a+', encoding='utf-8')
@@ -47,20 +46,20 @@ def do_request(id_user, from_id):
         #  Распечатка всех возможных команд
         if last_msg_text.lower() == '!команды':
             messages.method('messages.send', peer_id=id_user, message=create_help(), random_id=get_random())
-            print('Отправлен список команд')
             msg_ids_set.add(msg_id)
+            print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} отправлены команды')
             continue
         elif last_msg_text.lower() == '!мем':
             messages.method('messages.send', peer_id=id_user, attachment=','.join(get_img(mem_list)),
                             random_id=get_random())
             msg_ids_set.add(msg_id)
-            print('Отправлена картинка')
+            print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} отправлена картинка')
             continue
         elif last_msg_text.lower() == 'ab6dfb89f46d898bb3896f397fd801cf363c3c2559e8dc65cc2b96445257b262':
             messages.method('messages.send', peer_id=id_user, message='все бот умер', random_id=get_random())
             exit()
         #  Если последнее сообщение не от нас
-        elif last_msg_id != from_id:
+        elif last_msg_id != my_id:
             #  Функция разбивает сообщение по пробелам, обходит все слова, если они есть в словаре - возращает ключ
             #  Иначе возвращает False
             last_msg_text = get_key(last_msg_text, answers)
@@ -99,9 +98,8 @@ my_id = vk.users.get(name_case='gen')[0]['id']
 
 answers = get_answers()
 user_id_set = get_chats()
-mem_list = listdir('mems')
+mem_list = listdir('memes')
 correct_user_id_set = set()
-
 msg_ids_set = set()
 
 
@@ -124,9 +122,18 @@ for user in correct_user_id_set:
 
 
 while True:
+    new_mem = listdir('memes')
+    new_ans = get_answers()
+    if new_mem != mem_list:
+        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} memes update')
+        mem_list = new_mem
+    if new_ans != answers:
+        answers = new_ans
+        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} answers update')
     try:
         for usr_id in correct_user_id_set:
-            do_request(usr_id, my_id)
+            do_request(usr_id)
     except vk_messages.Exception_MessagesAPI:
         print(vk_messages.Exception_MessagesAPI)
         sleep(10)
+
