@@ -2,6 +2,7 @@
 *.pickle
 /build/
 /.idea/
+/memes/
 log.txt
 answers.txt
 ids.txt

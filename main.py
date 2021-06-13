@@ -190,6 +190,6 @@ while True:
         for usr_id in correct_user_id_set:
             do_request(usr_id)
     except vk_messages.Exception_MessagesAPI:
-        print('лул')
+        print(vk_messages.Exception_MessagesAPI)
         sleep(10)
 

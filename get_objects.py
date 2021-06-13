@@ -93,17 +93,3 @@ def get_key(msg: str, answers: dict):
         return choice(list(random_ans)).lower()
     return False
 
-
-def get_memes(mem_list):
-    new_mem = listdir('memes')
-    if new_mem != mem_list:
-        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} memes update')
-        return new_mem
-    return mem_list
-
-
-def update_answers(ans_dir):
-    new = get_answers()
-    if ans_dir != new:
-        return new
-    return
