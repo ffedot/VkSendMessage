@@ -96,3 +96,36 @@ def get_key(msg: str, answers: dict):
         return choice(list(random_ans)).lower()
     return False
 
+
+def get_time_str(number: int, t: str):
+    words_str = {'s' : ['секунду', 'секунды', 'секунд'],
+                 'm' : ['минуту', 'минуты', 'минут'],
+                 'h' : ['час', 'часа', 'часов'],
+                 'd' : ['день', 'дня', 'дней']
+                 }
+    if number == 0:
+        return ''
+    if 10 <= number % 100 <= 20:
+        return f'{number} {words_str[t][2]} '
+    elif number % 10 == 1:
+        return f'{number} {words_str[t][0]} '
+    elif 2 <= number % 10 <= 4:
+        return f'{number} {words_str[t][1]} '
+    else:
+        return f'{number} {words_str[t][2]} '
+
+
+def get_time(seconds: int):
+    return_string = 'Бот работает уже\n'
+    s = (seconds % 3600) % 60
+    m = (seconds % 3600) // 60
+    h = seconds // 3600
+    d = seconds // 3600 // 24
+    words_int = [d, h, m, s]
+    words_str = ['d', 'h', 'm', 's']
+    while h > 23:
+        d += 1
+        h -= 24
+    for i in range(len(words_int)):
+        return_string += get_time_str(words_int[i], words_str[i])
+    return return_string
