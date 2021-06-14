@@ -1,7 +1,13 @@
 from bs4 import BeautifulSoup
 from requests import get, exceptions
-from random import choice
+from random import choice, random
 from settings import TT_KEY
+
+
+def coin_flip():
+    if random() >= 0.7:
+        return 'Орел'
+    return 'Решка'
 
 
 def get_chats():
@@ -129,3 +135,4 @@ def get_time(seconds: int):
     for i in range(len(words_int)):
         return_string += get_time_str(words_int[i], words_str[i])
     return return_string
+

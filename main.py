@@ -47,7 +47,7 @@ def fill_commands_list(history, i):
             commands.append(last_msg_text.lower())
             msg_ids_set.add(msg_id)
             return
-    elif last_msg_text.lower() in ['!мем', '!команды', '!uptime']:
+    elif last_msg_text.lower() in ['!мем', '!команды', '!uptime', '!монетка']:
         commands.append(last_msg_text.lower())
         msg_ids_set.add(msg_id)
         return
@@ -64,7 +64,6 @@ def fill_commands_list(history, i):
         if last_msg_text:
             if isinstance(answers[last_msg_text], list):
                 temp_dictionary['message'] = choice(answers[last_msg_text])
-
             else:
                 temp_dictionary['message'] = answers[last_msg_text.lower()]
             temp_dictionary['first_name'] = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]
@@ -118,12 +117,19 @@ def sending_msg(id_user):
                                     random_id=get_random())
                     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлена картинка')
 
-                if cmd == '!команды':
+                # if cmd == '!команды':
+                #     messages.method(name='messages.send',
+                #                     peer_id=id_user,
+                #                     message=create_help(),
+                #                     random_id=get_random())
+                #     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлены команды')
+
+                if cmd == '!монетка':
                     messages.method(name='messages.send',
                                     peer_id=id_user,
-                                    message=create_help(),
+                                    message=coin_flip(),
                                     random_id=get_random())
-                    print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлены команды')
+                    print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} брошена монетка')
 
                 if cmd == '!uptime':
                     messages.method(name='messages.send',
@@ -150,8 +156,8 @@ def sending_msg(id_user):
                 print(f'Отправлено сообщение "{message}" {firstname} {lastname}')
                 logfile = open('log.txt', 'a+', encoding='utf-8')
                 logfile.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
-                logfile.write(f'Отправлено сообщение "{message}" {firstname} {lastname}, '
-                              f'ID: {last_msg_id}\n')
+                logfile.write(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} Отправлено сообщение "{message}" '
+                              f'{firstname} {lastname}, ID: {last_msg_id}\n')
                 logfile.close()
 
 
