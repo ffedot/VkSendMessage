@@ -1,8 +1,7 @@
 from bs4 import BeautifulSoup
 from requests import get, exceptions
 from random import choice
-from os import listdir
-from datetime import datetime
+from settings import TT_KEY
 
 
 def get_chats():
@@ -77,6 +76,10 @@ def no_spaces(s):
 
 
 def get_key(msg: str, answers: dict):
+    if 'tiktok' in msg.lower():
+        if get_ticktok_nickname(msg) == 'holodova0':
+            return TT_KEY
+        return 'tiktok'
     random_ans = set()
     if msg not in answers:
         msg_list = msg.split(' ')

@@ -1,9 +1,11 @@
 from vk_messages import MessagesAPI, vk_messages
 from vk_messages.utils import get_random
-from settings import LOGIN, PASSWORD, TT_KEY
+from settings import LOGIN, PASSWORD
 from get_objects import *
 from sys import exit
-from time import sleep
+from time import sleep, time
+from datetime import datetime
+from os import listdir
 import vk_api
 
 
@@ -178,8 +180,11 @@ for user in correct_user_id_set:
 
 active = True
 
+start = time()
 while True:
-
+    if int(time() - start) % 900 == 0:
+        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
+        sleep(1)
     new_mem = listdir('memes')
     new_ans = get_answers()
     if new_mem != mem_list:
@@ -194,4 +199,3 @@ while True:
     except vk_messages.Exception_MessagesAPI:
         print(vk_messages.Exception_MessagesAPI)
         sleep(10)
-
