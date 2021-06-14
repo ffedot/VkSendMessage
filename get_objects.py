@@ -61,7 +61,7 @@ def get_answers():
 
 
 def edit_dict(ans):
-    if ans[0] in ['[', ']'] and ans [-1] in ['[', ']']:
+    if ans[0] in ['[', ']'] and ans[-1] in ['[', ']']:
         return no_spaces(ans[1:-1].split(';'))
 
 
@@ -98,10 +98,10 @@ def get_key(msg: str, answers: dict):
 
 
 def get_time_str(number: int, t: str):
-    words_str = {'s' : ['секунду', 'секунды', 'секунд'],
-                 'm' : ['минуту', 'минуты', 'минут'],
-                 'h' : ['час', 'часа', 'часов'],
-                 'd' : ['день', 'дня', 'дней']
+    words_str = {'s': ['секунду', 'секунды', 'секунд'],
+                 'm': ['минуту', 'минуты', 'минут'],
+                 'h': ['час', 'часа', 'часов'],
+                 'd': ['день', 'дня', 'дней']
                  }
     if number == 0:
         return ''

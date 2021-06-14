@@ -51,12 +51,20 @@ def fill_commands_list(history, i):
         commands.append(last_msg_text.lower())
         msg_ids_set.add(msg_id)
         return
-    elif last_msg_id != my_id:
+
+    if history['items'][i]['attachments']:
+        if history['items'][i]['attachments'][0]['type'] == 'audio_message':
+            if history['items'][i]['attachments'][0]['audio_message']['owner_id'] == 144322116:
+                last_msg_text = 'audio_message_polina'
+            else:
+                last_msg_text = 'audio_message_not_polina'
+    if last_msg_id != my_id:
         temp_dictionary = dict()
         last_msg_text = get_key(last_msg_text, answers)
         if last_msg_text:
             if isinstance(answers[last_msg_text], list):
                 temp_dictionary['message'] = choice(answers[last_msg_text])
+
             else:
                 temp_dictionary['message'] = answers[last_msg_text.lower()]
             temp_dictionary['first_name'] = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]
