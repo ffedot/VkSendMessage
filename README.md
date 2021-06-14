@@ -19,6 +19,7 @@ create ids.txt and fill it ids (1 id for line)
 ![alt text](get_id.png "get user id")  
 if u need ignore id in ids.txt add # before id (#11111111)
 
+create "memes" folder and fill it .png or other images  
 start main.py
 
 # Create .exe
