@@ -47,7 +47,7 @@ def fill_commands_list(history, i):
             commands.append(last_msg_text.lower())
             msg_ids_set.add(msg_id)
             return
-    elif last_msg_text.lower() in ['!мем', '!команды', '!uptime', '!монетка']:
+    elif last_msg_text.lower() in ['!мем', '!команды', '!uptime']:
         commands.append(last_msg_text.lower())
         msg_ids_set.add(msg_id)
         return
@@ -58,12 +58,15 @@ def fill_commands_list(history, i):
                 last_msg_text = 'audio_message_polina'
             else:
                 last_msg_text = 'audio_message_not_polina'
-    if last_msg_id != my_id:
+    if last_msg_id != my_id or last_msg_text == '!монетка':
+        print(last_msg_text)
         temp_dictionary = dict()
         last_msg_text = get_key(last_msg_text, answers)
         if last_msg_text:
             if isinstance(answers[last_msg_text], list):
                 temp_dictionary['message'] = choice(answers[last_msg_text])
+            elif last_msg_text == '!монетка':
+                temp_dictionary['message'] = coin_flip()
             else:
                 temp_dictionary['message'] = answers[last_msg_text.lower()]
             temp_dictionary['first_name'] = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]
@@ -123,13 +126,6 @@ def sending_msg(id_user):
                 #                     message=create_help(),
                 #                     random_id=get_random())
                 #     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлены команды')
-
-                if cmd == '!монетка':
-                    messages.method(name='messages.send',
-                                    peer_id=id_user,
-                                    message=coin_flip(),
-                                    random_id=get_random())
-                    print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} брошена монетка')
 
                 if cmd == '!uptime':
                     messages.method(name='messages.send',
