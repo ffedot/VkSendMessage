@@ -10,7 +10,6 @@ import vk_api
 
 # TODO OTHER ACCOUNT
 # TODO CREATE FOLDERS IF NOT EXIST
-# TODO запятые ( и другая пунктуация ) через [0] и [-1]
 # TODO !мем56 (мем по номеру)
 # TODO !погода
 # TODO rework !команды
@@ -140,7 +139,7 @@ def sending_msg(id_user):
                 if cmd == '!статус':
                     messages.method(name='messages.send',
                                     peer_id=id_user,
-                                    message=get_time(int(time() - start)),
+                                    message=get_time_info(int(time() - start)),
                                     random_id=get_random())
                     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлен uptime')
 

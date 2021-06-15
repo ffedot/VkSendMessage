@@ -82,7 +82,7 @@ def no_spaces(s):
 
 
 def get_key(msg: str, answers: dict):
-
+    signs = [',', '.', '!', '?', '-', ';', ':', '_', '«', '»', ')', '(', '…', '-']
     if 'tiktok' in msg.lower():
         if get_ticktok_nickname(msg) == 'holodova0':
             return TT_KEY
@@ -91,6 +91,8 @@ def get_key(msg: str, answers: dict):
     if msg not in answers:
         msg_list = msg.split(' ')
         for i in msg_list:
+            while i[-1] in signs:
+                i = i[:-1]
             if i.lower() in answers:
                 random_ans.add(i)
         for i in msg_list:
@@ -122,7 +124,7 @@ def get_time_str(number: int, t: str):
         return f'{number} {words_str[t][2]} '
 
 
-def get_time(seconds: int):
+def get_time_info(seconds: int):
     return_string = 'Бот работает уже\n'
     s = (seconds % 3600) % 60
     m = (seconds % 3600) // 60
