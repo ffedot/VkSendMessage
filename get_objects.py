@@ -6,8 +6,8 @@ from settings import TT_KEY
 
 def coin_flip():
     if random() >= 0.7:
-        return 'Орел'
-    return 'Решка'
+        return 'Решка'
+    return 'Орел'
 
 
 def get_chats():
@@ -51,9 +51,9 @@ def get_ticktok_nickname(url: str):
     return nickname
 
 
-def get_answers():
+def get_answers(filename: str):
     answers = dict()
-    with open('answers.txt', 'r', encoding='utf-8') as file:
+    with open(filename, 'r', encoding='utf-8') as file:
         for line in file:
             if line[0].strip() == '#':
                 continue
@@ -82,6 +82,7 @@ def no_spaces(s):
 
 
 def get_key(msg: str, answers: dict):
+
     if 'tiktok' in msg.lower():
         if get_ticktok_nickname(msg) == 'holodova0':
             return TT_KEY

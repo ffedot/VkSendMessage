@@ -5,8 +5,15 @@ from get_objects import *
 from sys import exit
 from time import sleep, time
 from datetime import datetime
-from os import listdir
+from os import listdir, remove
 import vk_api
+
+# TODO OTHER ACCOUNT
+# TODO CREATE FOLDERS IF NOT EXIST
+# TODO запятые ( и другая пунктуация ) через [0] и [-1]
+# TODO !мем56 (мем по номеру)
+# TODO !погода
+# TODO rework !команды
 
 
 def get_img(path):
@@ -18,16 +25,16 @@ def get_img(path):
     return ','.join(attachments)
 
 
-def create_help():
-    help_msg = ''
-    for k in answers.keys():
-        if k == TT_KEY:
-            continue
-        if k[0] == '&':
-            continue
-        help_msg += k
-        help_msg += '\n'
-    return help_msg
+# def create_help():
+#     help_msg = ''
+#     for k in answers.keys():
+#         if k == TT_KEY:
+#             continue
+#         if k[0] == '&':
+#             continue
+#         help_msg += k
+#         help_msg += '\n'
+#     return help_msg
 
 
 def fill_commands_list(history, i):
@@ -47,7 +54,7 @@ def fill_commands_list(history, i):
             commands.append(last_msg_text.lower())
             msg_ids_set.add(msg_id)
             return
-    elif last_msg_text.lower() in ['!мем', '!команды', '!uptime']:
+    elif last_msg_text.lower() in ['!мем', '!команды', '!статус']:
         commands.append(last_msg_text.lower())
         msg_ids_set.add(msg_id)
         return
@@ -59,9 +66,12 @@ def fill_commands_list(history, i):
             else:
                 last_msg_text = 'audio_message_not_polina'
     if last_msg_id != my_id or last_msg_text == '!монетка':
-        print(last_msg_text)
         temp_dictionary = dict()
-        last_msg_text = get_key(last_msg_text, answers)
+        if last_msg_id != 144322116:
+            answers = answers_all
+        else:
+            answers = answers_polina
+        last_msg_text = get_key(last_msg_text, answers_all)
         if last_msg_text:
             if isinstance(answers[last_msg_text], list):
                 temp_dictionary['message'] = choice(answers[last_msg_text])
@@ -81,7 +91,7 @@ def fill_commands_list(history, i):
 
 def sending_msg(id_user):
     global commands, active
-    n = 5
+    n = 3
     #  Получаем 5 последних сообщений с пользователем id_user
     history = messages.method('messages.getHistory', user_id=id_user, count=n)
 
@@ -127,7 +137,7 @@ def sending_msg(id_user):
                 #                     random_id=get_random())
                 #     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлены команды')
 
-                if cmd == '!uptime':
+                if cmd == '!статус':
                     messages.method(name='messages.send',
                                     peer_id=id_user,
                                     message=get_time(int(time() - start)),
@@ -149,7 +159,8 @@ def sending_msg(id_user):
                                 message=message,
                                 random_id=get_random(),
                                 reply_to=msg_id)
-                print(f'Отправлено сообщение "{message}" {firstname} {lastname}')
+                print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} '
+                      f'Отправлено сообщение "{message}" {firstname} {lastname}')
                 logfile = open('log.txt', 'a+', encoding='utf-8')
                 logfile.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
                 logfile.write(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} Отправлено сообщение "{message}" '
@@ -170,7 +181,8 @@ print(f"Выполнен вход в аккаунт {vk.users.get(name_case='gen
 #  Получаем ID пользователя, с которого будут отправляться сообщения
 my_id = vk.users.get(name_case='gen')[0]['id']
 
-answers = get_answers()
+answers_all = get_answers('answers_all.txt')
+answers_polina = get_answers('answers_polina.txt')
 user_id_set = get_chats()
 mem_list = listdir('memes')
 correct_user_id_set = set()
@@ -199,20 +211,27 @@ active = True
 
 start = time()
 while True:
-    if int(time() - start) % 900 == 0:
+    if int(time() - start) % 1800 == 0:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
         sleep(1)
     new_mem = listdir('memes')
-    new_ans = get_answers()
+    new_ans_a = get_answers('answers_all.txt')
+    new_ans_p = get_answers('answers_polina.txt')
     if new_mem != mem_list:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} memes update')
         mem_list = new_mem
-    if new_ans != answers:
-        answers = new_ans
+    if new_ans_a != answers_all or new_ans_p != answers_polina:
+        answers_all = new_ans_a
+        answers_polina = new_ans_p
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} answers update')
     try:
         for usr_id in correct_user_id_set:
             sending_msg(usr_id)
-    except vk_messages.Exception_MessagesAPI:
-        print(vk_messages.Exception_MessagesAPI)
+    except vk_messages.Exception_MessagesAPI as ex:
+        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
+        print(ex)
         sleep(10)
+    except AttributeError:
+        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} error, trying login again')
+        remove('sessions/' + listdir('sessions')[0])
+        messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
