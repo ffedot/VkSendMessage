@@ -27,18 +27,6 @@ def get_img(index=999999):
     return ','.join(attachments)
 
 
-# def create_help():
-#     help_msg = ''
-#     for k in answers.keys():
-#         if k == TT_KEY:
-#             continue
-#         if k[0] == '&':
-#             continue
-#         help_msg += k
-#         help_msg += '\n'
-#     return help_msg
-
-
 def fill_commands_list(history, i):
     global commands
     all_msg_logs = open('all_msg_logs.txt', 'a+', encoding='utf-8')
@@ -56,7 +44,7 @@ def fill_commands_list(history, i):
             commands.append(last_msg_text.lower())
             msg_ids_set.add(msg_id)
             return
-    elif last_msg_text.lower() in ['!мем', '!команды', '!статус'] or last_msg_text.lower()[:4] == '!мем':
+    elif last_msg_text.lower()[:4] == '!мем':
         commands.append(last_msg_text.lower())
         msg_ids_set.add(msg_id)
         return
@@ -67,7 +55,7 @@ def fill_commands_list(history, i):
                 last_msg_text = 'audio_message_polina'
             else:
                 last_msg_text = 'audio_message_not_polina'
-    if last_msg_id != my_id or last_msg_text in ['!монетка', '!погода']:
+    if last_msg_id != my_id or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь']:
         temp_dictionary = dict()
         if last_msg_id != 144322116:
             answers = answers_all
@@ -81,6 +69,10 @@ def fill_commands_list(history, i):
                 temp_dictionary['message'] = coin_flip()
             elif last_msg_text == '!погода':
                 temp_dictionary['message'] = get_weather_message()
+            elif last_msg_text == '!помощь':
+                temp_dictionary['message'] = get_help_message()
+            elif last_msg_text == '!статус':
+                temp_dictionary['message'] = get_time_info(int(time() - start))
             else:
                 temp_dictionary['message'] = answers[last_msg_text.lower()]
             temp_dictionary['first_name'] = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]
@@ -144,19 +136,6 @@ def sending_msg(id_user):
                                     random_id=get_random())
                     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлена картинка')
 
-                # if cmd == '!команды':
-                #     messages.method(name='messages.send',
-                #                     peer_id=id_user,
-                #                     message=create_help(),
-                #                     random_id=get_random())
-                #     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлены команды')
-
-                if cmd == '!статус':
-                    messages.method(name='messages.send',
-                                    peer_id=id_user,
-                                    message=get_time_info(int(time() - start)),
-                                    random_id=get_random())
-                    print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлен uptime')
 
         if isinstance(cmd, dict):
             if active:

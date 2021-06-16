@@ -154,3 +154,13 @@ def get_weather_message():
     temp_c = int(w.temperature('celsius')['temp'])
 
     return f'В городе Владивосток {temp_c}°C\n{w.detailed_status.title()}'
+
+
+def get_help_message():
+    string = ''
+    with open('help.txt', 'r', encoding='utf-8') as help_txt:
+        for line in help_txt:
+            string += line.strip()
+            string += '\n'
+    return string
+
