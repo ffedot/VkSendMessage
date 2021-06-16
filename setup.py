@@ -4,11 +4,10 @@ from cx_Freeze import setup, Executable
 executables = [Executable('main.py', target_name='vkSendMessage.exe')]
 
 
-
 excludes = ['pygame', 'unittest', 'tkinter', 'numpy', 'asyncio', 'concurrent', 'ctypes',
             'distutils', 'msilib', 'pkg_resources', 'pycparser', 'pydoc_data']
 
-include_files = ['.env', 'answers.txt', 'ids.txt', 'sessions']
+include_files = ['.env', 'ids.txt', 'sessions', 'memes', 'logs', 'all_answers.txt', 'polina_answers.txt', 'help.txt']
 
 
 options = {'build_exe': {

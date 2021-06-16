@@ -21,9 +21,9 @@ def get_img(index=999999):
     return ','.join(attachments)
 
 
-def fill_commands_list(history, i):
+def fill_commands_list(history, i, dialog_id):
     global commands
-    all_msg_logs = open('all_msg_logs.txt', 'a+', encoding='utf-8')
+    all_msg_logs = open(f'logs/vk_{dialog_id}.txt', 'a+', encoding='utf-8')
     last_msg_text = history['items'][i]['text']
     last_msg_id = history['items'][i]['from_id']
     msg_id = history['items'][i]['id']
@@ -92,7 +92,7 @@ def sending_msg(id_user):
 
     commands = list()
     for i in range(n):
-        fill_commands_list(history, i)
+        fill_commands_list(history, i, id_user)
 
     for i, cmd in enumerate(reversed(commands)):
 

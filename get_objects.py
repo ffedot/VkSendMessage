@@ -3,7 +3,9 @@ from random import choice, random
 from settings import TT_KEY, YANDEX_API_KEY
 from requests import get
 import requests
+import pickle
 import json
+import os
 
 
 def coin_flip():
@@ -23,12 +25,15 @@ def get_chats():
 
 
 def get_ticktok_nickname(url: str):
+    if os.path.exists(f'{"sessions/"}cookies_tiktok.pickle'):
+        with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'rb') as handle:
+            cookies = pickle.load(handle)
     headers = {
         'Accept': '*/*',
         "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 YaBrowser/21.5.2.638 Yowser/2.5 Safari/537.36'
     }
     try:
-        req = get(url, headers=headers)
+        req = get(url, headers=headers, cookies=cookies)
     except requests.exceptions.MissingSchema:
         return
     except requests.exceptions.InvalidURL:
@@ -50,6 +55,8 @@ def get_ticktok_nickname(url: str):
     my_str = temp_list[0]
 
     nickname = my_str[my_str.find('@') + 1:my_str.find('/', 213)]
+    with open(f'{"sessions/"}cookies_tiktok.pickle', 'wb') as handle:
+        pickle.dump(req.cookies, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return nickname
 
 
@@ -142,6 +149,9 @@ def get_time_info(seconds: int):
 
 
 def get_weather_today():
+    if os.path.exists(f'{"sessions/"}cookies_yandex_weather.pickle'):
+        with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'rb') as handle:
+            cookies = pickle.load(handle)
 
     headers = {'X-Yandex-API-Key': YANDEX_API_KEY}
 
@@ -149,15 +159,16 @@ def get_weather_today():
         'lat': '43.11981',
         'lon': '131.88692',
         'lang': 'ru_RU',
-        'extra': 'true'}
+        'limit': '1',
+        'hours': 'false',
+        'extra': 'false'}
 
     url = 'https://api.weather.yandex.ru/v2/forecast?'
-    res = requests.get(url=url, headers=headers, params=params)
+    res = requests.get(url=url, headers=headers, params=params, cookies=cookies)
 
-    json = res.json()
+    res_in_json = res.json()
 
-    temp = json['fact']['temp']
-
+    temp = res_in_json['fact']['temp']
     condition_dict = {
         'clear': 'ясно',
         'partly-cloudy': 'малооблачно',
@@ -179,14 +190,20 @@ def get_weather_today():
         'thunderstorm-with-rain': 'дождь с грозой',
         'thunderstorm-with-hail': 'гроза с градом'}
 
-    condition = condition_dict[json['fact']['condition']]
+    condition = condition_dict[res_in_json['fact']['condition']]
 
-    return f'В городе Владивосток{temp}°C, {condition}'
+    with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'wb') as handle:
+        pickle.dump(res.cookies, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return f'В городе Владивосток {temp}°C, {condition}'
 
 
 def get_weather_tomorrow():
+    if os.path.exists(f'{"sessions/"}cookies_yandex_weather.pickle'):
+        with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'rb') as handle:
+            cookies = pickle.load(handle)
     string = ""
-    headers = {'X-Yandex-API-Key': '53621d53-cb19-4d95-b810-c5b295478eeb'}
+    headers = {'X-Yandex-API-Key': YANDEX_API_KEY}
     params = {
         'lat': '43.11981',
         'lon': '131.88692',
@@ -195,7 +212,7 @@ def get_weather_tomorrow():
         'extra': 'true'}
 
     url = 'https://api.weather.yandex.ru/v2/forecast?'
-    res = requests.get(url=url, headers=headers, params=params)
+    res = requests.get(url=url, headers=headers, params=params, cookies=cookies)
     condition_dict = {
         'clear': 'ясно',
         'partly-cloudy': 'малооблачно',
@@ -222,13 +239,15 @@ def get_weather_tomorrow():
         'evening': 'Вечером',
         'night': 'Ночью'
     }
-    json = res.json()
+    res_in_json = res.json()
 
     for i in days_dict:
-        temp = json['forecasts'][1]['parts'][i]['temp_avg']
-        condition = condition_dict[json['forecasts'][1]['parts'][i]['condition']]
+        temp = res_in_json['forecasts'][1]['parts'][i]['temp_avg']
+        condition = condition_dict[res_in_json['forecasts'][1]['parts'][i]['condition']]
         string += f'{days_dict[i]} - средняя температура {temp}°C, {condition}\n'
 
+    with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'wb') as handle:
+        pickle.dump(res.cookies, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return f'Завтра в городе Владивосток\n{string}'
 
 
