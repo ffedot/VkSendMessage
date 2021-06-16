@@ -3,6 +3,7 @@ from random import choice, random
 from settings import TT_KEY, YANDEX_API_KEY
 from requests import get
 import requests
+import json
 
 
 def coin_flip():
@@ -85,7 +86,6 @@ def no_spaces(s):
 def get_key(msg: str, answers: dict):
     if msg == '':
         return
-    signs = [',', '.', '!', '?', '-', ';', ':', '_', '«', '»', ')', '(', '…', '-']
     if 'tiktok' in msg.lower():
         if get_ticktok_nickname(msg) == 'holodova0':
             return TT_KEY
@@ -94,8 +94,6 @@ def get_key(msg: str, answers: dict):
     if msg not in answers:
         msg_list = msg.split(' ')
         for i in msg_list:
-            while i[-1] in signs:
-                i = i[:-1]
             if i.lower() in answers:
                 random_ans.add(i)
         for i in msg_list:
@@ -241,4 +239,13 @@ def get_help_message():
             string += line.strip()
             string += '\n'
     return string
+
+
+def get_btc():
+    url = 'https://api.bittrex.com/api/v1.1/public/getticker?market=USD-BTC'
+    req = requests.get(url)
+    data = json.loads(req.text)
+    price = data['result']['Ask']
+
+    return '1 BTC = {0:,} $'.format(int(price))
 

@@ -49,7 +49,8 @@ def fill_commands_list(history, i):
                 last_msg_text = 'audio_message_polina'
             else:
                 last_msg_text = 'audio_message_not_polina'
-    if last_msg_id != my_id or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь', '!погода_завтра']:
+    if last_msg_id != my_id or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь', '!погода_завтра',
+                                                 '!биткоин']:
         temp_dictionary = dict()
         if last_msg_id != 144322116:
             answers = answers_all
@@ -65,6 +66,8 @@ def fill_commands_list(history, i):
                 temp_dictionary['message'] = get_weather_today()
             elif last_msg_text == '!погода_завтра':
                 temp_dictionary['message'] = get_weather_tomorrow()
+            elif last_msg_text == '!биткоин':
+                temp_dictionary['message'] = get_btc()
             elif last_msg_text == '!помощь':
                 temp_dictionary['message'] = get_help_message()
             elif last_msg_text == '!статус':
@@ -83,7 +86,7 @@ def fill_commands_list(history, i):
 
 def sending_msg(id_user):
     global commands, active
-    n = 3
+    n = 5
     #  Получаем 5 последних сообщений с пользователем id_user
     history = messages.method('messages.getHistory', user_id=id_user, count=n)
 
