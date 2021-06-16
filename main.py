@@ -10,14 +10,16 @@ import vk_api
 
 # TODO OTHER ACCOUNT
 # TODO CREATE FOLDERS IF NOT EXIST
-# TODO !мем56 (мем по номеру)
 # TODO !погода
 # TODO rework !команды
 
 
-def get_img(path):
+def get_img(index=999999):
     image = 'memes/'
-    image += choice(path)
+    if index == 999999:
+        image += choice(mem_list)
+    else:
+        image += mem_list[index]
     attachments = list()
     upload_image = upload.photo_messages(photos=image)[0]
     attachments.append(f'photo{upload_image["owner_id"]}_{upload_image["id"]}')
@@ -53,7 +55,7 @@ def fill_commands_list(history, i):
             commands.append(last_msg_text.lower())
             msg_ids_set.add(msg_id)
             return
-    elif last_msg_text.lower() in ['!мем', '!команды', '!статус']:
+    elif last_msg_text.lower() or last_msg_text.lower()[:4] in ['!мем', '!команды', '!статус']:
         commands.append(last_msg_text.lower())
         msg_ids_set.add(msg_id)
         return
@@ -122,10 +124,17 @@ def sending_msg(id_user):
                 print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} отключение бота')
                 exit()
             if active:
-                if cmd == '!мем':
+                if cmd[:4] == '!мем':
+                    if cmd[4:] != '':
+                        if int(cmd[4:]) <= len(mem_list):
+                            attach = get_img(int(cmd[4:]) - 1)
+                        else:
+                            attach = get_img()
+                    else:
+                        attach = get_img()
                     messages.method(name='messages.send',
                                     peer_id=id_user,
-                                    attachment=get_img(mem_list),
+                                    attachment=attach,
                                     random_id=get_random())
                     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлена картинка')
 
