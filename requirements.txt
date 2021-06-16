@@ -1,6 +1,7 @@
 vk_messages==0.2
+pyowm==3.2.0
 vk_api==11.9.4
+requests==2.25.1
+beautifulsoup4==4.9.3
+cx_Freeze==6.6
 python-dotenv==0.17.1
-bs4~=0.0.1
-beautifulsoup4~=4.9.3
-requests~=2.25.1
