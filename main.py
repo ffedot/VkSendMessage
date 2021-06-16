@@ -126,9 +126,12 @@ def sending_msg(id_user):
             if active:
                 if cmd[:4] == '!мем':
                     if cmd[4:] != '':
-                        if int(cmd[4:]) <= len(mem_list):
-                            attach = get_img(int(cmd[4:]) - 1)
-                        else:
+                        try:
+                            if int(cmd[4:]) <= len(mem_list):
+                                attach = get_img(int(cmd[4:]) - 1)
+                            else:
+                                attach = get_img()
+                        except ValueError:
                             attach = get_img()
                     else:
                         attach = get_img()
