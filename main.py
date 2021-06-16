@@ -169,8 +169,8 @@ print(f"Выполнен вход в аккаунт {vk.users.get(name_case='gen
 #  Получаем ID пользователя, с которого будут отправляться сообщения
 my_id = vk.users.get(name_case='gen')[0]['id']
 
-answers_all = get_answers('answers_all.txt')
-answers_polina = get_answers('answers_polina.txt')
+answers_all = get_answers('all_answers.txt')
+answers_polina = get_answers('polina_answers.txt')
 user_id_set = get_chats()
 mem_list = listdir('memes')
 correct_user_id_set = set()
@@ -203,8 +203,8 @@ while True:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
         sleep(1)
     new_mem = listdir('memes')
-    new_ans_a = get_answers('answers_all.txt')
-    new_ans_p = get_answers('answers_polina.txt')
+    new_ans_a = get_answers('all_answers.txt')
+    new_ans_p = get_answers('polina_answers.txt')
     if new_mem != mem_list:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} memes update')
         mem_list = new_mem
