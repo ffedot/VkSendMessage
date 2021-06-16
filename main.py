@@ -9,12 +9,6 @@ from os import listdir, remove
 import vk_api
 
 
-# TODO OTHER ACCOUNT
-# TODO CREATE FOLDERS IF NOT EXIST
-# TODO !погода
-# TODO rework !команды
-
-
 def get_img(index=999999):
     image = 'memes/'
     if index == 999999:
@@ -136,7 +130,6 @@ def sending_msg(id_user):
                                     random_id=get_random())
                     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлена картинка')
 
-
         if isinstance(cmd, dict):
             if active:
                 try:
@@ -160,6 +153,8 @@ def sending_msg(id_user):
                               f'{firstname} {lastname}, ID: {last_msg_id}\n')
                 logfile.close()
 
+
+create_files()
 
 messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
 vk_session = vk_api.VkApi(LOGIN, PASSWORD)
