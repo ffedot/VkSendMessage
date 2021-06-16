@@ -49,7 +49,7 @@ def fill_commands_list(history, i):
                 last_msg_text = 'audio_message_polina'
             else:
                 last_msg_text = 'audio_message_not_polina'
-    if last_msg_id != my_id or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь']:
+    if last_msg_id != my_id or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь', '!погода_завтра']:
         temp_dictionary = dict()
         if last_msg_id != 144322116:
             answers = answers_all
@@ -62,7 +62,9 @@ def fill_commands_list(history, i):
             elif last_msg_text == '!монетка':
                 temp_dictionary['message'] = coin_flip()
             elif last_msg_text == '!погода':
-                temp_dictionary['message'] = get_weather_message()
+                temp_dictionary['message'] = get_weather_today()
+            elif last_msg_text == '!погода_завтра':
+                temp_dictionary['message'] = get_weather_tomorrow()
             elif last_msg_text == '!помощь':
                 temp_dictionary['message'] = get_help_message()
             elif last_msg_text == '!статус':
@@ -152,6 +154,7 @@ def sending_msg(id_user):
                 logfile.write(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} Отправлено сообщение "{message}" '
                               f'{firstname} {lastname}, ID: {last_msg_id}\n')
                 logfile.close()
+
 
 messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
 vk_session = vk_api.VkApi(LOGIN, PASSWORD)

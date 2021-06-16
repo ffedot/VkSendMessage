@@ -1,11 +1,8 @@
 from bs4 import BeautifulSoup
-from requests import get, exceptions
 from random import choice, random
-from settings import TT_KEY
-from settings import PYOWM_KEY
-from pyowm.utils.config import get_default_config
+from settings import TT_KEY, YANDEX_API_KEY
 from requests import get
-import pyowm
+import requests
 
 
 def coin_flip():
@@ -31,9 +28,9 @@ def get_ticktok_nickname(url: str):
     }
     try:
         req = get(url, headers=headers)
-    except exceptions.MissingSchema:
+    except requests.exceptions.MissingSchema:
         return
-    except exceptions.InvalidURL:
+    except requests.exceptions.InvalidURL:
         return
     src = req.text
 
@@ -146,17 +143,95 @@ def get_time_info(seconds: int):
     return return_string
 
 
-def get_weather_message():
-    config = get_default_config()
-    config['language'] = 'ru'
+def get_weather_today():
 
-    owm = pyowm.OWM(PYOWM_KEY, config)
+    headers = {'X-Yandex-API-Key': YANDEX_API_KEY}
 
-    w = owm.weather_manager().weather_at_place('Vladivostok').weather
+    params = {
+        'lat': '43.11981',
+        'lon': '131.88692',
+        'lang': 'ru_RU',
+        'extra': 'true'}
 
-    temp_c = int(w.temperature('celsius')['temp'])
+    url = 'https://api.weather.yandex.ru/v2/forecast?'
+    res = requests.get(url=url, headers=headers, params=params)
 
-    return f'В городе Владивосток {temp_c}°C\n{w.detailed_status.title()}'
+    json = res.json()
+
+    temp = json['fact']['temp']
+
+    condition_dict = {
+        'clear': 'ясно',
+        'partly-cloudy': 'малооблачно',
+        'cloudy': 'облачно с прояснениями',
+        'overcast': 'пасмурно',
+        'drizzle': 'морось',
+        'light-rain': 'небольшой дождь',
+        'rain': 'дождь',
+        'moderate-rain': 'умеренно сильный дождь',
+        'heavy-rain': 'сильный дождь',
+        'continuous-heavy-rain': 'длительный сильный дождь',
+        'showers': 'ливень',
+        'wet-snow': 'дождь со снегом',
+        'light-snow': 'небольшой снег',
+        'snow': 'снег',
+        'snow-showers': 'снегопад',
+        'hail': 'град',
+        'thunderstorm': 'гроза',
+        'thunderstorm-with-rain': 'дождь с грозой',
+        'thunderstorm-with-hail': 'гроза с градом'}
+
+    condition = condition_dict[json['fact']['condition']]
+
+    return f'В городе Владивосток{temp}°C, {condition}'
+
+
+def get_weather_tomorrow():
+    string = ""
+    headers = {'X-Yandex-API-Key': '53621d53-cb19-4d95-b810-c5b295478eeb'}
+    params = {
+        'lat': '43.11981',
+        'lon': '131.88692',
+        'lang': 'ru_RU',
+        'limit': '2',
+        'extra': 'true'}
+
+    url = 'https://api.weather.yandex.ru/v2/forecast?'
+    res = requests.get(url=url, headers=headers, params=params)
+    condition_dict = {
+        'clear': 'ясно',
+        'partly-cloudy': 'малооблачно',
+        'cloudy': 'облачно с прояснениями',
+        'overcast': 'пасмурно',
+        'drizzle': 'морось',
+        'light-rain': 'небольшой дождь',
+        'rain': 'дождь',
+        'moderate-rain': 'умеренно сильный дождь',
+        'heavy-rain': 'сильный дождь',
+        'continuous-heavy-rain': 'длительный сильный дождь',
+        'showers': 'ливень',
+        'wet-snow': 'дождь со снегом',
+        'light-snow': 'небольшой снег',
+        'snow': 'снег',
+        'snow-showers': 'снегопад',
+        'hail': 'град',
+        'thunderstorm': 'гроза',
+        'thunderstorm-with-rain': 'дождь с грозой',
+        'thunderstorm-with-hail': 'гроза с градом'}
+    days_dict = {
+        'morning': 'Утром',
+        'day': 'Днем',
+        'evening': 'Вечером',
+        'night': 'Ночью'
+    }
+    json = res.json()
+
+    for i in days_dict:
+        temp = json['forecasts'][1]['parts'][i]['temp_avg']
+        condition = condition_dict[json['forecasts'][1]['parts'][i]['condition']]
+        string += f'{days_dict[i]} - средняя температура {temp}°C, {condition}\n'
+
+    return f'Завтра в городе Владивосток\n{string}'
 
 
 def get_help_message():
