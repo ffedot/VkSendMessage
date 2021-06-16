@@ -153,9 +153,6 @@ def sending_msg(id_user):
                               f'{firstname} {lastname}, ID: {last_msg_id}\n')
                 logfile.close()
 
-
-create_files()
-
 messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
 vk_session = vk_api.VkApi(LOGIN, PASSWORD)
 vk_session.auth()
