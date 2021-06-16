@@ -2,6 +2,9 @@ from bs4 import BeautifulSoup
 from requests import get, exceptions
 from random import choice, random
 from settings import TT_KEY
+from settings import PYOWM_KEY
+from pyowm.utils.config import get_default_config
+import pyowm
 
 
 def coin_flip():
@@ -139,3 +142,15 @@ def get_time_info(seconds: int):
         return_string += get_time_str(words_int[i], words_str[i])
     return return_string
 
+
+def get_weather_message():
+    config = get_default_config()
+    config['language'] = 'ru'
+
+    owm = pyowm.OWM(PYOWM_KEY, config)
+
+    w = owm.weather_manager().weather_at_place('Vladivostok').weather
+
+    temp_c = int(w.temperature('celsius')['temp'])
+
+    return f'В городе Владивосток {temp_c}°C\n{w.detailed_status.title()}'

@@ -1,12 +1,13 @@
 from vk_messages import MessagesAPI, vk_messages
 from vk_messages.utils import get_random
-from settings import LOGIN, PASSWORD
+from settings import *
 from get_objects import *
 from sys import exit
 from time import sleep, time
 from datetime import datetime
 from os import listdir, remove
 import vk_api
+
 
 # TODO OTHER ACCOUNT
 # TODO CREATE FOLDERS IF NOT EXIST
@@ -55,7 +56,7 @@ def fill_commands_list(history, i):
             commands.append(last_msg_text.lower())
             msg_ids_set.add(msg_id)
             return
-    elif last_msg_text.lower() or last_msg_text.lower()[:4] in ['!мем', '!команды', '!статус']:
+    elif last_msg_text.lower() in ['!мем', '!команды', '!статус'] or last_msg_text.lower()[:4] == '!мем':
         commands.append(last_msg_text.lower())
         msg_ids_set.add(msg_id)
         return
@@ -66,18 +67,20 @@ def fill_commands_list(history, i):
                 last_msg_text = 'audio_message_polina'
             else:
                 last_msg_text = 'audio_message_not_polina'
-    if last_msg_id != my_id or last_msg_text == '!монетка':
+    if last_msg_id != my_id or last_msg_text in ['!монетка', '!погода']:
         temp_dictionary = dict()
         if last_msg_id != 144322116:
             answers = answers_all
         else:
             answers = answers_polina
-        last_msg_text = get_key(last_msg_text, answers_all)
+        last_msg_text = get_key(last_msg_text, answers)
         if last_msg_text:
             if isinstance(answers[last_msg_text], list):
                 temp_dictionary['message'] = choice(answers[last_msg_text])
             elif last_msg_text == '!монетка':
                 temp_dictionary['message'] = coin_flip()
+            elif last_msg_text == '!погода':
+                temp_dictionary['message'] = get_weather_message()
             else:
                 temp_dictionary['message'] = answers[last_msg_text.lower()]
             temp_dictionary['first_name'] = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]
