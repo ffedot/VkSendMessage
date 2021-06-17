@@ -152,7 +152,7 @@ def sending_msg(id_user):
                                 reply_to=msg_id)
                 print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} '
                       f'Отправлено сообщение "{message}" {firstname} {lastname}')
-                logfile = open('log.txt', 'a+', encoding='utf-8')
+                logfile = open('txt/log.txt', 'a+', encoding='utf-8')
                 logfile.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
                 logfile.write(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} Отправлено сообщение "{message}" '
                               f'{firstname} {lastname}, ID: {last_msg_id}\n')
@@ -172,8 +172,8 @@ print(f"Выполнен вход в аккаунт {vk.users.get(name_case='gen
 #  Получаем ID пользователя, с которого будут отправляться сообщения
 my_id = vk.users.get(name_case='gen')[0]['id']
 
-answers_all = get_answers('all_answers.txt')
-answers_polina = get_answers('polina_answers.txt')
+answers_all = get_answers('txt/all_answers.txt')
+answers_polina = get_answers('txt/polina_answers.txt')
 user_id_set = get_chats()
 mem_list = listdir('memes')
 correct_user_id_set = set()
@@ -206,8 +206,8 @@ while True:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
         sleep(1)
     new_mem = listdir('memes')
-    new_ans_a = get_answers('all_answers.txt')
-    new_ans_p = get_answers('polina_answers.txt')
+    new_ans_a = get_answers('txt/all_answers.txt')
+    new_ans_p = get_answers('txt/polina_answers.txt')
     if new_mem != mem_list:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} memes update')
         mem_list = new_mem

@@ -1,11 +1,13 @@
 from bs4 import BeautifulSoup
 from random import choice, random
-from settings import TT_KEY, YANDEX_API_KEY
+from settings import TT_KEY, YANDEX_API_KEY, PYOWM_KEY
 from requests import get
+from pyowm.utils.config import get_default_config
 import requests
 import pickle
 import json
 import os
+import pyowm
 
 
 def coin_flip():
@@ -16,7 +18,7 @@ def coin_flip():
 
 def get_chats():
     user_id_set = set()
-    with open('ids.txt', 'r', encoding='utf-8') as file:
+    with open('txt/ids.txt', 'r', encoding='utf-8') as file:
         for line in file:
             if line[0].strip() == '#':
                 continue
@@ -158,15 +160,16 @@ def get_weather_today():
     params = {
         'lat': '43.11981',
         'lon': '131.88692',
-        'lang': 'ru_RU',
         'limit': '1',
         'hours': 'false',
         'extra': 'false'}
 
     url = 'https://api.weather.yandex.ru/v2/forecast?'
     res = requests.get(url=url, headers=headers, params=params, cookies=cookies)
-
-    res_in_json = res.json()
+    try:
+        res_in_json = res.json()
+    except json.decoder.JSONDecodeError:
+        return get_weather_pyowm()
 
     temp = res_in_json['fact']['temp']
     condition_dict = {
@@ -240,7 +243,6 @@ def get_weather_tomorrow():
         'night': 'Ночью'
     }
     res_in_json = res.json()
-
     for i in days_dict:
         temp = res_in_json['forecasts'][1]['parts'][i]['temp_avg']
         condition = condition_dict[res_in_json['forecasts'][1]['parts'][i]['condition']]
@@ -268,3 +270,15 @@ def get_btc():
 
     return '1 BTC = {0:,} $'.format(int(price))
 
+
+def get_weather_pyowm():
+    config = get_default_config()
+    config['language'] = 'ru'
+
+    owm = pyowm.OWM(PYOWM_KEY, config)
+
+    w = owm.weather_manager().weather_at_place('Vladivostok').weather
+
+    temp_c = int(w.temperature('celsius')['temp'])
+
+    return f'В городе Владивосток {temp_c}°C, {w.detailed_status}'

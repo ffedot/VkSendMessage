@@ -9,6 +9,8 @@ def create_files():
         os.mkdir('sessions')
     if not os.path.exists('logs'):
         os.mkdir('logs')
+    if not os.path.exists('txt'):
+        os.mkdir('txt')
 
     if not len(os.listdir('memes')):
         img = 'https://memepedia.ru/wp-content/uploads/2020/09/dzheremi-klarkson-mem.png'
@@ -17,24 +19,24 @@ def create_files():
         out.write(p.content)
         out.close()
 
-    if not os.path.exists('help.txt'):
-        file = open('help.txt', 'w')
+    if not os.path.exists('txt/help.txt'):
+        file = open('txt/help.txt', 'w')
         file.close()
 
-    if not os.path.exists('log.txt'):
-        file = open('log.txt', 'w')
+    if not os.path.exists('txt/log.txt'):
+        file = open('txt/log.txt', 'w')
         file.close()
 
-    if not os.path.exists('ids.txt'):
-        file = open('ids.txt', 'w')
+    if not os.path.exists('txt/ids.txt'):
+        file = open('txt/ids.txt', 'w')
         file.close()
 
-    if not os.path.exists('polina_answers.txt'):
-        file = open('polina_answers.txt', 'w')
+    if not os.path.exists('txt/polina_answers.txt'):
+        file = open('txt/polina_answers.txt', 'w')
         file.close()
 
-    if not os.path.exists('all_answers.txt.txt'):
-        file = open('all_answers.txt', 'w')
+    if not os.path.exists('txt/all_answers.txt.txt'):
+        file = open('txt/all_answers.txt', 'w')
         file.write('key : word\n')
         file.close()
 

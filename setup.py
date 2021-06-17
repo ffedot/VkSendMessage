@@ -7,7 +7,7 @@ executables = [Executable('main.py', target_name='vkSendMessage.exe')]
 excludes = ['pygame', 'unittest', 'tkinter', 'numpy', 'asyncio', 'concurrent', 'ctypes',
             'distutils', 'msilib', 'pkg_resources', 'pycparser', 'pydoc_data']
 
-include_files = ['.env', 'ids.txt', 'sessions', 'memes', 'logs', 'all_answers.txt', 'polina_answers.txt', 'help.txt']
+include_files = ['.env', 'txt', 'sessions', 'memes', 'logs']
 
 
 options = {'build_exe': {
