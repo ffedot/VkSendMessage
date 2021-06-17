@@ -34,7 +34,7 @@ def fill_commands_list(history, i, dialog_id):
                        f' {vk.users.get(user_id=last_msg_id)[0]["last_name"]}, MSG_ID: {msg_id}\n')
     msg_ids_set.add(msg_id)
     if last_msg_text.lower() in ['!выкл', '!пауза']:
-        if last_msg_id == my_id:
+        if last_msg_id in admins:
             commands.append(last_msg_text.lower())
             msg_ids_set.add(msg_id)
             return
@@ -49,8 +49,8 @@ def fill_commands_list(history, i, dialog_id):
                 last_msg_text = 'audio_message_polina'
             else:
                 last_msg_text = 'audio_message_not_polina'
-    if last_msg_id != my_id or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь', '!погода_завтра',
-                                                 '!биткоин']:
+    if last_msg_id not in admins or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь', '!погода_завтра',
+                                                      '!биткоин']:
         temp_dictionary = dict()
         if last_msg_id != 144322116:
             answers = answers_all
@@ -171,7 +171,7 @@ print(f"Выполнен вход в аккаунт {vk.users.get(name_case='gen
 
 #  Получаем ID пользователя, с которого будут отправляться сообщения
 my_id = vk.users.get(name_case='gen')[0]['id']
-
+admins = [201675606, my_id]
 answers_all = get_answers('txt/all_answers.txt')
 answers_polina = get_answers('txt/polina_answers.txt')
 user_id_set = get_chats()
