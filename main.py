@@ -63,7 +63,7 @@ def fill_commands_list(history, i, dialog_id):
             if isinstance(answers[last_msg_text], list):
                 temp_dictionary['message'] = choice(answers[last_msg_text])
             elif last_msg_text == '!монетка':
-                if last_msg_id == 144322116:
+                if last_msg_id == 299158076:
                     temp_dictionary['message'] = coin_flip()
                 else:
                     temp_dictionary['message'] = coin_flip2()
@@ -150,9 +150,9 @@ def sending_msg(id_user):
                 message = cmd['message']
                 msg_id = cmd['msg_id']
                 last_msg_id = cmd['last_msg_id']
-                print(last_msg_id)
-                if last_msg_id == 299158076:
-                    msg_id = 934734
+                if message[:20] == 'В городе Владивосток':
+                    if last_msg_id == 144322116:
+                        msg_id = 934734
                 messages.method('messages.send',
                                 peer_id=id_user,
                                 message=message,

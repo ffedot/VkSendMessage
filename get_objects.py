@@ -244,19 +244,20 @@ def get_weather_tomorrow():
         'night': 'Ночью'
     }
     res_in_json = res.json()
+    date = res_in_json['forecasts'][1]['date']
+    date_list = date.split('-')
     for i in days_dict:
         temp = res_in_json['forecasts'][1]['parts'][i]['temp_avg']
         condition = condition_dict[res_in_json['forecasts'][1]['parts'][i]['condition']]
         string += f'{days_dict[i]} - средняя температура {temp}°C, {condition}\n'
-
     with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'wb') as handle:
         pickle.dump(res.cookies, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    return f'Завтра в городе Владивосток\n{string}'
+    return f'Завтра ({date_list[2]}.{date_list[1]}.{date_list[0]}) в городе Владивосток\n{string}'
 
 
 def get_help_message():
     string = ''
-    with open('help.txt', 'r', encoding='utf-8') as help_txt:
+    with open('txt/help.txt', 'r', encoding='utf-8') as help_txt:
         for line in help_txt:
             string += line.strip()
             string += '\n'
@@ -283,3 +284,4 @@ def get_weather_pyowm():
     temp_c = int(w.temperature('celsius')['temp'])
 
     return f'В городе Владивосток {temp_c}°C, {w.detailed_status}'
+
