@@ -16,6 +16,12 @@ def coin_flip():
     return 'Орел'
 
 
+def coin_flip2():
+    if random() >= 0.5:
+        return 'Решка'
+    return 'Орел'
+
+
 def get_chats():
     user_id_set = set()
     with open('txt/ids.txt', 'r', encoding='utf-8') as file:
@@ -27,15 +33,12 @@ def get_chats():
 
 
 def get_ticktok_nickname(url: str):
-    if os.path.exists(f'{"sessions/"}cookies_tiktok.pickle'):
-        with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'rb') as handle:
-            cookies = pickle.load(handle)
     headers = {
         'Accept': '*/*',
         "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 YaBrowser/21.5.2.638 Yowser/2.5 Safari/537.36'
     }
     try:
-        req = get(url, headers=headers, cookies=cookies)
+        req = get(url, headers=headers)
     except requests.exceptions.MissingSchema:
         return
     except requests.exceptions.InvalidURL:
@@ -57,8 +60,6 @@ def get_ticktok_nickname(url: str):
     my_str = temp_list[0]
 
     nickname = my_str[my_str.find('@') + 1:my_str.find('/', 213)]
-    with open(f'{"sessions/"}cookies_tiktok.pickle', 'wb') as handle:
-        pickle.dump(req.cookies, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return nickname
 
 

@@ -6,6 +6,8 @@ from sys import exit
 from time import sleep, time
 from datetime import datetime
 from os import listdir, remove
+from requests import ConnectionError
+from http.client import RemoteDisconnected
 import vk_api
 
 
@@ -49,8 +51,8 @@ def fill_commands_list(history, i, dialog_id):
                 last_msg_text = 'audio_message_polina'
             else:
                 last_msg_text = 'audio_message_not_polina'
-    if last_msg_id not in admins or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь', '!погода_завтра',
-                                                      '!биткоин']:
+    if last_msg_id not in admins or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь',
+                                                      '!погода_завтра', '!биткоин']:
         temp_dictionary = dict()
         if last_msg_id != 144322116:
             answers = answers_all
@@ -61,7 +63,10 @@ def fill_commands_list(history, i, dialog_id):
             if isinstance(answers[last_msg_text], list):
                 temp_dictionary['message'] = choice(answers[last_msg_text])
             elif last_msg_text == '!монетка':
-                temp_dictionary['message'] = coin_flip()
+                if last_msg_id == 144322116:
+                    temp_dictionary['message'] = coin_flip()
+                else:
+                    temp_dictionary['message'] = coin_flip2()
             elif last_msg_text == '!погода':
                 temp_dictionary['message'] = get_weather_today()
             elif last_msg_text == '!погода_завтра':
@@ -145,6 +150,9 @@ def sending_msg(id_user):
                 message = cmd['message']
                 msg_id = cmd['msg_id']
                 last_msg_id = cmd['last_msg_id']
+                print(last_msg_id)
+                if last_msg_id == 299158076:
+                    msg_id = 934734
                 messages.method('messages.send',
                                 peer_id=id_user,
                                 message=message,
@@ -220,9 +228,12 @@ while True:
             sending_msg(usr_id)
     except vk_messages.Exception_MessagesAPI as ex:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
-        print(ex)
         sleep(10)
     except AttributeError:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} error, trying login again')
         remove('sessions/' + listdir('sessions')[0])
         messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
+    except RemoteDisconnected:
+        pass
+    except ConnectionError:
+        pass
