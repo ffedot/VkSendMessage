@@ -23,12 +23,12 @@ def get_img(index=999999):
     return ','.join(attachments)
 
 
-def fill_commands_list(history, i, dialog_id):
+def fill_commands_list(history, dialog_id):
     global commands
     all_msg_logs = open(f'logs/vk_{dialog_id}.txt', 'a+', encoding='utf-8')
-    last_msg_text = history['items'][i]['text']
-    last_msg_id = history['items'][i]['from_id']
-    msg_id = history['items'][i]['id']
+    last_msg_text = history['text']
+    last_msg_id = history['from_id']
+    msg_id = history['id']
     if msg_id in msg_ids_set:
         return
     all_msg_logs.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
@@ -45,9 +45,9 @@ def fill_commands_list(history, i, dialog_id):
         msg_ids_set.add(msg_id)
         return
 
-    if history['items'][i]['attachments']:
-        if history['items'][i]['attachments'][0]['type'] == 'audio_message':
-            if history['items'][i]['attachments'][0]['audio_message']['owner_id'] == 144322116:
+    if history['attachments']:
+        if history['attachments'][0]['type'] == 'audio_message':
+            if history['attachments'][0]['audio_message']['owner_id'] == 144322116:
                 last_msg_text = 'audio_message_polina'
             else:
                 last_msg_text = 'audio_message_not_polina'
@@ -79,8 +79,12 @@ def fill_commands_list(history, i, dialog_id):
                 temp_dictionary['message'] = get_time_info(int(time() - start))
             else:
                 temp_dictionary['message'] = answers[last_msg_text.lower()]
-            temp_dictionary['first_name'] = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"]
-            temp_dictionary['last_name'] = vk.users.get(name_case="dat", user_id=last_msg_id)[0]["last_name"]
+            if last_msg_id not in id_info:
+                id_info[last_msg_id] = dict(
+                    first_name=vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"],
+                    last_name=vk.users.get(name_case="dat", user_id=last_msg_id)[0]["last_name"])
+            temp_dictionary['first_name'] = id_info[last_msg_id]['first_name']
+            temp_dictionary['last_name'] = id_info[last_msg_id]['last_name']
             temp_dictionary['msg_id'] = msg_id
             temp_dictionary['last_msg_id'] = last_msg_id
         commands.append(temp_dictionary)
@@ -94,10 +98,13 @@ def sending_msg(id_user):
     n = 5
     #  Получаем 5 последних сообщений с пользователем id_user
     history = messages.method('messages.getHistory', user_id=id_user, count=n)
+    history_items = list()
+    for i in range(n):
+        history_items.append(history['items'][i])
 
     commands = list()
-    for i in range(n):
-        fill_commands_list(history, i, id_user)
+    for i in history_items:
+        fill_commands_list(i, id_user)
 
     for i, cmd in enumerate(reversed(commands)):
 
@@ -187,6 +194,7 @@ mem_list = listdir('memes')
 correct_user_id_set = set()
 commands = list()
 msg_ids_set = set()
+id_info = dict()
 
 
 #  Проходим по всему множеству с ID и пытаемся полчить последнее сообщение, если срабатывает исключение,

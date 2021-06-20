@@ -284,4 +284,3 @@ def get_weather_pyowm():
     temp_c = int(w.temperature('celsius')['temp'])
 
     return f'В городе Владивосток {temp_c}°C, {w.detailed_status}'
-
