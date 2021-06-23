@@ -9,6 +9,7 @@ from os import listdir, remove
 from requests import ConnectionError
 from http.client import RemoteDisconnected
 import vk_api
+import logging
 
 
 def get_img(index=999999):
@@ -217,10 +218,18 @@ for user in correct_user_id_set:
 active = True
 
 start = time()
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+fh = logging.FileHandler("logs/errors.txt")
+formatter = logging.Formatter('\n%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
+
 while True:
     if int(time() - start) % 1800 == 0:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
-        sleep(1)
     new_mem = listdir('memes')
     new_ans_a = get_answers('txt/all_answers.txt')
     new_ans_p = get_answers('txt/polina_answers.txt')
@@ -245,3 +254,6 @@ while True:
         pass
     except ConnectionError:
         pass
+    except Exception as e:
+        logger.exception(e)
+        continue
