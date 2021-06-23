@@ -12,9 +12,14 @@ import vk_api
 import logging
 
 
-def get_img(index=999999):
+def get_img(index=None) -> str:
+    """
+    Если фунция вызвана без параметра, то выбирается случайная картинка, иначе, картинка по индексу из списка.
+    Дальше происходит загрузка картинки на сервер.
+    Функция возвращает данные о картинке для последующей её отправки.
+    """
     image = 'memes/'
-    if index == 999999:
+    if index is None:
         image += choice(mem_list)
     else:
         image += mem_list[index]
@@ -73,7 +78,7 @@ def fill_commands_list(history, dialog_id):
             elif last_msg_text == '!погода_завтра':
                 temp_dictionary['message'] = get_weather_tomorrow()
             elif last_msg_text == '!биткоин':
-                temp_dictionary['message'] = get_btc()
+                temp_dictionary['message'] = get_btc_price()
             elif last_msg_text == '!помощь':
                 temp_dictionary['message'] = get_help_message()
             elif last_msg_text == '!статус':
@@ -97,7 +102,7 @@ def fill_commands_list(history, dialog_id):
 def sending_msg(id_user):
     global commands, active
     n = 5
-    #  Получаем 5 последних сообщений с пользователем id_user
+    #  Получаем n последних сообщений с пользователем id_user
     history = messages.method('messages.getHistory', user_id=id_user, count=n)
     history_items = list()
     for i in range(n):
@@ -107,7 +112,7 @@ def sending_msg(id_user):
     for i in history_items:
         fill_commands_list(i, id_user)
 
-    for i, cmd in enumerate(reversed(commands)):
+    for cmd in reversed(commands):
 
         if isinstance(cmd, str):
             if cmd == '!пауза':
@@ -181,11 +186,10 @@ vk_session.auth()
 vk = vk_session.get_api()
 upload = vk_api.VkUpload(vk_session)
 
-
+print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} bot started')
 print(f"Выполнен вход в аккаунт {vk.users.get(name_case='gen')[0]['first_name']} "
       f"{vk.users.get(name_case='gen')[0]['last_name']}")
 
-#  Получаем ID пользователя, с которого будут отправляться сообщения
 my_id = vk.users.get(name_case='gen')[0]['id']
 admins = [201675606, my_id]
 answers_all = get_answers('txt/all_answers.txt')

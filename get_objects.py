@@ -137,15 +137,12 @@ def get_time_str(number: int, t: str):
 
 def get_time_info(seconds: int):
     return_string = 'Бот работает уже\n'
-    s = (seconds % 3600) % 60
-    m = (seconds % 3600) // 60
-    h = seconds // 3600
     d = seconds // 3600 // 24
+    h = seconds // 3600 % 24
+    m = seconds % 3600 // 60
+    s = seconds % 3600 % 60
     words_int = [d, h, m, s]
     words_str = ['d', 'h', 'm', 's']
-    while h > 23:
-        d += 1
-        h -= 24
     for i in range(len(words_int)):
         return_string += get_time_str(words_int[i], words_str[i])
     return return_string
@@ -264,7 +261,7 @@ def get_help_message():
     return string
 
 
-def get_btc():
+def get_btc_price():
     url = 'https://api.bittrex.com/api/v1.1/public/getticker?market=USD-BTC'
     req = requests.get(url)
     data = json.loads(req.text)
