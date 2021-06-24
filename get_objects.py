@@ -3,6 +3,7 @@ from random import choice, random
 from settings import TT_KEY, YANDEX_API_KEY, PYOWM_KEY
 from requests import get
 from pyowm.utils.config import get_default_config
+from translate import Translator
 import requests
 import pickle
 import json
@@ -281,3 +282,11 @@ def get_weather_pyowm():
     temp_c = int(w.temperature('celsius')['temp'])
 
     return f'В городе Владивосток {temp_c}°C, {w.detailed_status}'
+
+
+def translate(message: str) -> str:
+    translator = Translator(from_lang='ru', to_lang='eng')
+    return translator.translate(message)
+
+
+

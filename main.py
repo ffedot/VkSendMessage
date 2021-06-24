@@ -1,22 +1,26 @@
-from vk_messages import MessagesAPI, vk_messages
-from vk_messages.utils import get_random
-from settings import *
-from get_objects import *
 from sys import exit
 from time import sleep, time
 from datetime import datetime
 from os import listdir, remove
+from random import randint
+import logging
+
+from vk_messages import MessagesAPI, vk_messages
+from vk_messages.utils import get_random
 from requests import ConnectionError
 from http.client import RemoteDisconnected
 import vk_api
-import logging
+
+from settings import *
+from get_objects import *
 
 
 def get_img(index=None) -> str:
     """
-    Если фунция вызвана без параметра, то выбирается случайная картинка, иначе, картинка по индексу из списка.
+    Если фунция вызвана без параметра - выбирается случайная картинка,
+    иначе, картинка по индексу из списка.
     Дальше происходит загрузка картинки на сервер.
-    Функция возвращает данные о картинке для последующей её отправки.
+    Функция возвращает данные о картинке для последующей её отправки
     """
     image = 'memes/'
     if index is None:
@@ -30,7 +34,13 @@ def get_img(index=None) -> str:
 
 
 def fill_commands_list(history, dialog_id):
+    """
+    Функция получает объект history и из него заполняет
+    глобальный список словарями для последующих действий
+
+    """
     global commands
+    text_to_translate = None
     all_msg_logs = open(f'logs/vk_{dialog_id}.txt', 'a+', encoding='utf-8')
     last_msg_text = history['text']
     last_msg_id = history['from_id']
@@ -50,6 +60,10 @@ def fill_commands_list(history, dialog_id):
         commands.append(last_msg_text.lower())
         msg_ids_set.add(msg_id)
         return
+    elif last_msg_text.lower()[:10] == '!перевести':
+        text_to_translate = ' '.join(last_msg_text.split()[1:])
+        last_msg_text = '!перевести'
+        msg_ids_set.add(msg_id)
 
     if history['attachments']:
         if history['attachments'][0]['type'] == 'audio_message':
@@ -58,7 +72,7 @@ def fill_commands_list(history, dialog_id):
             else:
                 last_msg_text = 'audio_message_not_polina'
     if last_msg_id not in admins or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь',
-                                                      '!погода_завтра', '!биткоин']:
+                                                      '!погода_завтра', '!биткоин', '!перевести', '!roll']:
         temp_dictionary = dict()
         if last_msg_id != 144322116:
             answers = answers_all
@@ -79,10 +93,14 @@ def fill_commands_list(history, dialog_id):
                 temp_dictionary['message'] = get_weather_tomorrow()
             elif last_msg_text == '!биткоин':
                 temp_dictionary['message'] = get_btc_price()
+            elif last_msg_text == '!roll':
+                temp_dictionary['message'] = str(randint(0, 100))
             elif last_msg_text == '!помощь':
                 temp_dictionary['message'] = get_help_message()
             elif last_msg_text == '!статус':
                 temp_dictionary['message'] = get_time_info(int(time() - start))
+            elif last_msg_text == '!перевести':
+                temp_dictionary['message'] = translate(text_to_translate)
             else:
                 temp_dictionary['message'] = answers[last_msg_text.lower()]
             if last_msg_id not in id_info:
@@ -100,6 +118,10 @@ def fill_commands_list(history, dialog_id):
 
 
 def sending_msg(id_user):
+    """
+    Функция отправляет сообщения исходя из данных словаря,
+    который заполняет функция fill_commands_list
+    """
     global commands, active
     n = 5
     #  Получаем n последних сообщений с пользователем id_user
