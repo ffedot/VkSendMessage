@@ -72,35 +72,35 @@ def fill_commands_list(history, dialog_id):
             else:
                 last_msg_text = 'audio_message_not_polina'
     if last_msg_id not in admins or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь',
-                                                      '!погода_завтра', '!биткоин', '!перевести', '!roll']:
+                                                      '!погода_завтра', '!биткоин', '!перевести', '!roll',
+                                                      '!погода_сегодня']:
         temp_dictionary = dict()
         if last_msg_id != 144322116:
             answers = answers_all
         else:
             answers = answers_polina
         last_msg_text = get_key(last_msg_text, answers)
+        commands_dict = {
+            '!погода': get_weather_today,
+            '!погода_завтра': get_weather_tomorrow,
+            '!погода_сегодня': get_weather_tomorrow,
+            '!монетка': coin_flip_fedya,
+            '!roll': roll,
+            '!помощь': get_help_message,
+            '!биткоин': get_btc_price,
+            '!перевести': translate
+        }
+        print(last_msg_text)
         if last_msg_text:
             if isinstance(answers[last_msg_text], list):
                 temp_dictionary['message'] = choice(answers[last_msg_text])
             elif last_msg_text == '!монетка':
                 if last_msg_id == 299158076:
-                    temp_dictionary['message'] = coin_flip()
-                else:
-                    temp_dictionary['message'] = coin_flip2()
-            elif last_msg_text == '!погода':
-                temp_dictionary['message'] = get_weather_today()
-            elif last_msg_text == '!погода_завтра':
-                temp_dictionary['message'] = get_weather_tomorrow()
-            elif last_msg_text == '!биткоин':
-                temp_dictionary['message'] = get_btc_price()
-            elif last_msg_text == '!roll':
-                temp_dictionary['message'] = str(randint(0, 100))
-            elif last_msg_text == '!помощь':
-                temp_dictionary['message'] = get_help_message()
-            elif last_msg_text == '!статус':
-                temp_dictionary['message'] = get_time_info(int(time() - start))
+                    temp_dictionary['message'] = coin_flip_fedya
             elif last_msg_text == '!перевести':
                 temp_dictionary['message'] = translate(text_to_translate)
+            elif last_msg_text in commands_dict:
+                temp_dictionary['message'] = commands_dict[last_msg_text]()
             else:
                 temp_dictionary['message'] = answers[last_msg_text.lower()]
             if last_msg_id not in id_info:
@@ -224,6 +224,7 @@ msg_ids_set = set()
 id_info = dict()
 
 
+
 #  Проходим по всему множеству с ID и пытаемся полчить последнее сообщение, если срабатывает исключение,
 #  значит диалога нет, если исключение не сработало, добавляем в список ID
 for user in user_id_set:
@@ -272,14 +273,14 @@ while True:
     except vk_messages.Exception_MessagesAPI as ex:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
         sleep(10)
-    except AttributeError:
-        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} error, trying login again')
-        remove('sessions/' + listdir('sessions')[0])
-        messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
+    # except AttributeError:
+    #     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} error, trying login again')
+    #     remove('sessions/' + listdir('sessions')[0])
+    #     messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
     except RemoteDisconnected:
         pass
     except ConnectionError:
         pass
-    except Exception as e:
-        logger.exception(e)
-        continue
+    # except Exception as e:
+    #     logger.exception(e)
+    #     continue

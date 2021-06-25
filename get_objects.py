@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from random import choice, random
+from random import choice, random, randint
 from settings import TT_KEY, YANDEX_API_KEY, PYOWM_KEY
 from requests import get
 from pyowm.utils.config import get_default_config
@@ -12,13 +12,13 @@ import pyowm
 
 
 def coin_flip():
-    if random() >= 0.7:
+    if random() >= 0.5:
         return 'Решка'
     return 'Орел'
 
 
-def coin_flip2():
-    if random() >= 0.5:
+def coin_flip_fedya():
+    if random() >= 0.7:
         return 'Решка'
     return 'Орел'
 
@@ -200,7 +200,7 @@ def get_weather_today():
     return f'В городе Владивосток {temp}°C, {condition}'
 
 
-def get_weather_tomorrow():
+def get_weather_tomorrow(n=1):
     if os.path.exists(f'{"sessions/"}cookies_yandex_weather.pickle'):
         with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'rb') as handle:
             cookies = pickle.load(handle)
@@ -242,7 +242,7 @@ def get_weather_tomorrow():
         'night': 'Ночью'
     }
     res_in_json = res.json()
-    date = res_in_json['forecasts'][1]['date']
+    date = res_in_json['forecasts'][n]['date']
     date_list = date.split('-')
     for i in days_dict:
         temp = res_in_json['forecasts'][1]['parts'][i]['temp_avg']
@@ -250,7 +250,11 @@ def get_weather_tomorrow():
         string += f'{days_dict[i]} - средняя температура {temp}°C, {condition}\n'
     with open(f'{"sessions/"}cookies_yandex_weather.pickle', 'wb') as handle:
         pickle.dump(res.cookies, handle, protocol=pickle.HIGHEST_PROTOCOL)
-    return f'Завтра ({date_list[2]}.{date_list[1]}.{date_list[0]}) в городе Владивосток\n{string}'
+    if n == 1:
+        day = 'Завтра'
+    else:
+        day = 'Сегодня'
+    return f'{day} ({date_list[2]}.{date_list[1]}.{date_list[0]}) в городе Владивосток\n{string}'
 
 
 def get_help_message():
@@ -267,20 +271,15 @@ def get_btc_price():
     req = requests.get(url)
     data = json.loads(req.text)
     price = data['result']['Ask']
-
     return '1 BTC = {0:,} $'.format(int(price))
 
 
 def get_weather_pyowm():
     config = get_default_config()
     config['language'] = 'ru'
-
     owm = pyowm.OWM(PYOWM_KEY, config)
-
     w = owm.weather_manager().weather_at_place('Vladivostok').weather
-
     temp_c = int(w.temperature('celsius')['temp'])
-
     return f'В городе Владивосток {temp_c}°C, {w.detailed_status}'
 
 
@@ -289,4 +288,5 @@ def translate(message: str) -> str:
     return translator.translate(message)
 
 
-
+def roll():
+    return str(randint(0, 100))
