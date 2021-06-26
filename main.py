@@ -33,18 +33,26 @@ def get_img(index=None) -> str:
     return ','.join(attachments)
 
 
-def fill_commands_list(history, dialog_id):
+def create_and_send_message(history, dialog_id):
     """
     Функция получает объект history и из него заполняет
     глобальный список словарями для последующих действий
 
     """
-    global commands
+    global commands, active, start
     text_to_translate = None
     all_msg_logs = open(f'logs/vk_{dialog_id}.txt', 'a+', encoding='utf-8')
     last_msg_text = history['text']
     last_msg_id = history['from_id']
     msg_id = history['id']
+    message = ""
+    if last_msg_id not in id_info:
+        id_info[last_msg_id] = dict(
+            first_name=vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"],
+            last_name=vk.users.get(name_case="dat", user_id=last_msg_id)[0]["last_name"])
+
+    firstname = id_info[last_msg_id]['first_name']
+    lastname = id_info[last_msg_id]['last_name']
     if msg_id in msg_ids_set:
         return
     all_msg_logs.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
@@ -53,11 +61,46 @@ def fill_commands_list(history, dialog_id):
     msg_ids_set.add(msg_id)
     if last_msg_text.lower() in ['!выкл', '!пауза']:
         if last_msg_id in admins:
-            commands.append(last_msg_text.lower())
-            msg_ids_set.add(msg_id)
-            return
+
+            if last_msg_text == '!пауза':
+                if active:
+                    message = 'поставил на паузу'
+                    active = False
+                else:
+                    message = 'снял с паузы'
+                    active = True
+                messages.method(name='messages.send',
+                                peer_id=last_msg_id,
+                                message=message,
+                                random_id=get_random())
+                print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} {message}')
+                msg_ids_set.add(msg_id)
+                return
+
+            elif last_msg_text == '!выкл':
+                messages.method(name='messages.send',
+                                peer_id=last_msg_id,
+                                message='все, пиздец, бот умер',
+                                random_id=get_random())
+                print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} отключение бота')
+                exit()
+
     elif last_msg_text.lower()[:4] == '!мем':
-        commands.append(last_msg_text.lower())
+        if last_msg_text[4:] != '':
+            try:
+                if int(last_msg_text[4:]) <= len(mem_list):
+                    attach = get_img(int(last_msg_text[4:]) - 1)
+                else:
+                    attach = get_img()
+            except ValueError:
+                attach = get_img()
+        else:
+            attach = get_img()
+        messages.method(name='messages.send',
+                        peer_id=dialog_id,
+                        attachment=attach,
+                        random_id=get_random())
+        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлена картинка')
         msg_ids_set.add(msg_id)
         return
     elif last_msg_text.lower()[:10] == '!перевести':
@@ -65,53 +108,63 @@ def fill_commands_list(history, dialog_id):
         last_msg_text = '!перевести'
         msg_ids_set.add(msg_id)
 
-    if history['attachments']:
-        if history['attachments'][0]['type'] == 'audio_message':
-            if history['attachments'][0]['audio_message']['owner_id'] == 144322116:
-                last_msg_text = 'audio_message_polina'
-            else:
-                last_msg_text = 'audio_message_not_polina'
     if last_msg_id not in admins or last_msg_text in ['!монетка', '!погода', '!статус', '!помощь',
                                                       '!погода_завтра', '!биткоин', '!перевести', '!roll',
                                                       '!погода_сегодня']:
-        temp_dictionary = dict()
-        if last_msg_id != 144322116:
-            answers = answers_all
-        else:
-            answers = answers_polina
-        last_msg_text = get_key(last_msg_text, answers)
         commands_dict = {
             '!погода': get_weather_today,
-            '!погода_завтра': get_weather_tomorrow,
-            '!погода_сегодня': get_weather_tomorrow,
-            '!монетка': coin_flip_fedya,
             '!roll': roll,
             '!помощь': get_help_message,
             '!биткоин': get_btc_price,
-            '!перевести': translate
         }
-        print(last_msg_text)
-        if last_msg_text:
-            if isinstance(answers[last_msg_text], list):
-                temp_dictionary['message'] = choice(answers[last_msg_text])
-            elif last_msg_text == '!монетка':
-                if last_msg_id == 299158076:
-                    temp_dictionary['message'] = coin_flip_fedya
-            elif last_msg_text == '!перевести':
-                temp_dictionary['message'] = translate(text_to_translate)
-            elif last_msg_text in commands_dict:
-                temp_dictionary['message'] = commands_dict[last_msg_text]()
+        if history['attachments']:
+            if history['attachments'][0]['type'] == 'audio_message':
+                if history['attachments'][0]['audio_message']['owner_id'] == 144322116:
+                    message = 'вау, это же приятный голос, давайте послушаем'
+                else:
+                    message = 'че распизделся блять, тебе буквы для чего изобрели, что бы мы это вот слушали здесь?'
+        elif last_msg_text == '!монетка':
+            if last_msg_id == 299158076:
+                message = coin_flip_fedya()
             else:
-                temp_dictionary['message'] = answers[last_msg_text.lower()]
-            if last_msg_id not in id_info:
-                id_info[last_msg_id] = dict(
-                    first_name=vk.users.get(name_case="dat", user_id=last_msg_id)[0]["first_name"],
-                    last_name=vk.users.get(name_case="dat", user_id=last_msg_id)[0]["last_name"])
-            temp_dictionary['first_name'] = id_info[last_msg_id]['first_name']
-            temp_dictionary['last_name'] = id_info[last_msg_id]['last_name']
-            temp_dictionary['msg_id'] = msg_id
-            temp_dictionary['last_msg_id'] = last_msg_id
-        commands.append(temp_dictionary)
+                message = coin_flip()
+        elif last_msg_text == '!перевести':
+            message = translate(text_to_translate)
+        elif last_msg_text == '!погода_завтра':
+            message = get_weather_tomorrow()
+        elif last_msg_text == '!погода_сегодня':
+            message = get_weather_tomorrow(0)
+        elif last_msg_text == '!статус':
+            message = get_time_info(int(time() - start))
+        elif last_msg_text in commands_dict:
+            message = commands_dict[last_msg_text]()
+        else:
+            x = random()
+            if x >= 0.25:
+                msg_ids_set.add(msg_id)
+                all_msg_logs.close()
+                return
+            message = balaboba_answer(last_msg_text)
+            if message is None:
+                return
+
+        if active:
+            if message[:20] == 'В городе Владивосток':
+                if last_msg_id == 144322116:
+                    msg_id = 934734
+            messages.method('messages.send',
+                            peer_id=dialog_id,
+                            message=message,
+                            random_id=get_random(),
+                            reply_to=msg_id)
+            print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} '
+                  f'Отправлено сообщение "{message}" {firstname} {lastname}')
+            logfile = open('txt/log.txt', 'a+', encoding='utf-8')
+            logfile.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
+            logfile.write(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} Отправлено сообщение "{message}" '
+                          f'{firstname} {lastname}, ID: {last_msg_id}\n')
+            logfile.close()
+
         msg_ids_set.add(msg_id)
     all_msg_logs.close()
     return
@@ -129,77 +182,8 @@ def sending_msg(id_user):
     history_items = list()
     for i in range(n):
         history_items.append(history['items'][i])
-
-    commands = list()
     for i in history_items:
-        fill_commands_list(i, id_user)
-
-    for cmd in reversed(commands):
-
-        if isinstance(cmd, str):
-            if cmd == '!пауза':
-                if active:
-                    message = 'поставил на паузу'
-                    active = False
-                else:
-                    message = 'снял с паузы'
-                    active = True
-                messages.method(name='messages.send',
-                                peer_id=id_user,
-                                message=message,
-                                random_id=get_random())
-                print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} {message}')
-
-            if cmd == '!выкл':
-                messages.method(name='messages.send',
-                                peer_id=id_user,
-                                message='все, пиздец, бот умер',
-                                random_id=get_random())
-                print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S> ")} отключение бота')
-                exit()
-            if active:
-                if cmd[:4] == '!мем':
-                    if cmd[4:] != '':
-                        try:
-                            if int(cmd[4:]) <= len(mem_list):
-                                attach = get_img(int(cmd[4:]) - 1)
-                            else:
-                                attach = get_img()
-                        except ValueError:
-                            attach = get_img()
-                    else:
-                        attach = get_img()
-                    messages.method(name='messages.send',
-                                    peer_id=id_user,
-                                    attachment=attach,
-                                    random_id=get_random())
-                    print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} отправлена картинка')
-
-        if isinstance(cmd, dict):
-            if active:
-                try:
-                    firstname = cmd['first_name']
-                except KeyError:
-                    continue
-                lastname = cmd['last_name']
-                message = cmd['message']
-                msg_id = cmd['msg_id']
-                last_msg_id = cmd['last_msg_id']
-                if message[:20] == 'В городе Владивосток':
-                    if last_msg_id == 144322116:
-                        msg_id = 934734
-                messages.method('messages.send',
-                                peer_id=id_user,
-                                message=message,
-                                random_id=get_random(),
-                                reply_to=msg_id)
-                print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} '
-                      f'Отправлено сообщение "{message}" {firstname} {lastname}')
-                logfile = open('txt/log.txt', 'a+', encoding='utf-8')
-                logfile.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
-                logfile.write(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} Отправлено сообщение "{message}" '
-                              f'{firstname} {lastname}, ID: {last_msg_id}\n')
-                logfile.close()
+        create_and_send_message(i, id_user)
 
 
 messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
@@ -214,15 +198,12 @@ print(f"Выполнен вход в аккаунт {vk.users.get(name_case='gen
 
 my_id = vk.users.get(name_case='gen')[0]['id']
 admins = [201675606, my_id]
-answers_all = get_answers('txt/all_answers.txt')
-answers_polina = get_answers('txt/polina_answers.txt')
 user_id_set = get_chats()
 mem_list = listdir('memes')
 correct_user_id_set = set()
 commands = list()
 msg_ids_set = set()
 id_info = dict()
-
 
 
 #  Проходим по всему множеству с ID и пытаемся полчить последнее сообщение, если срабатывает исключение,
@@ -263,24 +244,20 @@ while True:
     if new_mem != mem_list:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} memes update')
         mem_list = new_mem
-    if new_ans_a != answers_all or new_ans_p != answers_polina:
-        answers_all = new_ans_a
-        answers_polina = new_ans_p
-        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} answers update')
     try:
         for usr_id in correct_user_id_set:
             sending_msg(usr_id)
     except vk_messages.Exception_MessagesAPI as ex:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
         sleep(10)
-    # except AttributeError:
-    #     print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} error, trying login again')
-    #     remove('sessions/' + listdir('sessions')[0])
-    #     messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
+    except AttributeError:
+        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} error, trying login again')
+        remove('sessions/' + listdir('sessions')[0])
+        messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
     except RemoteDisconnected:
         pass
     except ConnectionError:
         pass
-    # except Exception as e:
-    #     logger.exception(e)
-    #     continue
+    except Exception as e:
+        logger.exception(e)
+        continue
