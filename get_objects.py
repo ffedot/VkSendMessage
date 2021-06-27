@@ -7,6 +7,7 @@ from translate import Translator
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
+from copy import copy
 from fake_useragent import UserAgent
 from time import sleep
 import requests
@@ -296,43 +297,3 @@ def translate(message: str) -> str:
 def roll():
     return str(randint(0, 100))
 
-
-def balaboba_answer(message):
-    url = f'https://yandex.ru/lab/yalm?style={randint(0, 11)}'
-    useragent = UserAgent()
-
-    options = webdriver.ChromeOptions()
-    options.add_argument(f'user-agent={useragent.Chrome}')
-    options.add_argument("--disable-blink-features=AutomationControlled")
-    #options.add_argument("--headless")
-
-    driver = webdriver.Chrome(executable_path='driver/chromedriver.exe', options=options)
-
-    driver.get(url=url)
-
-    driver.find_element_by_css_selector('.Button2').click()
-
-    text_input = driver.find_element_by_class_name('Textarea-Control')
-
-    text_input.clear()
-
-    text_input.send_keys(message)
-
-    text_input.send_keys(Keys.ENTER)
-    try_error = True
-    while True:
-        try:
-            output_text = driver.find_element_by_class_name('response__text').text
-            driver.close()
-            driver.quit()
-            return output_text
-        except NoSuchElementException:
-            sleep(1)
-            if try_error:
-                try:
-                    error_message = driver.find_element_by_css_selector('.app .init__error_num2')
-                    driver.close()
-                    driver.quit()
-                    return None
-                except NoSuchElementException:
-                    try_error = False

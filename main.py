@@ -13,6 +13,7 @@ import vk_api
 
 from settings import *
 from get_objects import *
+from balaboba_class import YandexBalaboba
 
 
 def get_img(index=None) -> str:
@@ -140,11 +141,12 @@ def create_and_send_message(history, dialog_id):
             message = commands_dict[last_msg_text]()
         else:
             x = random()
+            print(x)
             if x >= 0.25:
                 msg_ids_set.add(msg_id)
                 all_msg_logs.close()
                 return
-            message = balaboba_answer(last_msg_text)
+            message = YandexBalaboba(last_msg_text).get_balaboba()
             if message is None:
                 return
 
