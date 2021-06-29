@@ -6,6 +6,7 @@ import logging
 from vk_messages import MessagesAPI, vk_messages
 from vk_messages.utils import get_random
 from requests import ConnectionError
+from time import time, sleep
 from http.client import RemoteDisconnected
 import vk_api
 
@@ -157,11 +158,6 @@ def create_and_send_message(history, dialog_id):
                             reply_to=msg_id)
             print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} '
                   f'Отправлено сообщение "{message}" {firstname} {lastname}')
-            logfile = open('txt/log.txt', 'a+', encoding='utf-8')
-            logfile.write(datetime.now().strftime("<%d-%m-%Y %H:%M:%S> "))
-            logfile.write(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} Отправлено сообщение "{message}" '
-                          f'{firstname} {lastname}, ID: {last_msg_id}\n')
-            logfile.close()
 
         msg_ids_set.add(msg_id)
     all_msg_logs.close()
