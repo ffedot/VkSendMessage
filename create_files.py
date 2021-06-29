@@ -44,7 +44,7 @@ def create_files():
         file = open('.env', 'w')
         file.write('LOGIN=\n')
         file.write('PASSWORD=\n')
-        file.write('PYOWM_KEY=\n')
+        file.write('YANDEX_API_KEY=\n')
 
 
 create_files()
