@@ -1,8 +1,6 @@
 from sys import exit
-from time import sleep, time
 from datetime import datetime
 from os import listdir, remove
-from random import randint
 import logging
 
 from vk_messages import MessagesAPI, vk_messages
@@ -140,9 +138,7 @@ def create_and_send_message(history, dialog_id):
         elif last_msg_text in commands_dict:
             message = commands_dict[last_msg_text]()
         else:
-            x = random()
-            print(x)
-            if x >= 0.25:
+            if random() >= 0.25:
                 msg_ids_set.add(msg_id)
                 all_msg_logs.close()
                 return

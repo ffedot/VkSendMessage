@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from random import choice, random, randint
+from random import choice, random, randint, randrange
 from settings import TT_KEY, YANDEX_API_KEY, PYOWM_KEY
 from requests import get
 from pyowm.utils.config import get_default_config
@@ -7,10 +7,10 @@ from translate import Translator
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
-from copy import copy
 from fake_useragent import UserAgent
-from time import sleep
+from time import sleep, time
 import requests
+import urllib.request
 import pickle
 import json
 import os
@@ -296,4 +296,40 @@ def translate(message: str) -> str:
 
 def roll():
     return str(randint(0, 100))
+
+
+def balaboba_answer(message: str) -> str:
+    headers = {
+        'Content-Type': 'application/json',
+        "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/90.0.4430.212 YaBrowser/21.5.2.638 Yowser/2.5 Safari/537.36',
+        'Origin': 'https://yandex.ru',
+        'Referer': 'https://yandex.ru/',
+    }
+    api_url = 'https://zeapi.yandex.net/lab/api/yalm/text3'
+    payload = {"query": message, "intro": 0, "filter": randrange(12)}
+    params = json.dumps(payload).encode('UTF-8')
+    req = urllib.request.Request(api_url, data=params, headers=headers)
+    response = urllib.request.urlopen(req)
+    res = response.read()
+    text = json.loads(res)['text']
+    return text
+
+
+def balaboba_answer_thread(message: str, style: int) -> str:
+    headers = {
+        'Content-Type': 'application/json',
+        "User-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/90.0.4430.212 YaBrowser/21.5.2.638 Yowser/2.5 Safari/537.36',
+        'Origin': 'https://yandex.ru',
+        'Referer': 'https://yandex.ru/',
+    }
+    api_url = 'https://zeapi.yandex.net/lab/api/yalm/text3'
+    payload = {"query": message, "intro": 0, "filter": style}
+    params = json.dumps(payload).encode('UTF-8')
+    req = urllib.request.Request(api_url, data=params, headers=headers)
+    response = urllib.request.urlopen(req)
+    res = response.read()
+    text = json.loads(res)['text']
+    return text
 
