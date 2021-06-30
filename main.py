@@ -138,12 +138,17 @@ def create_and_send_message(history, dialog_id):
             message = get_time_info(int(time() - start))
         elif last_msg_text in commands_dict:
             message = commands_dict[last_msg_text]()
+        elif 'tiktok' in last_msg_text:
+            if get_ticktok_nickname(last_msg_text) == 'holovoda0':
+                message = 'ваааааау тиктоки от полины всем смотреть'
+            else:
+                message = 'вам в мозги насрали, а вы и ради тиктоки смотреть'
         else:
             if random() >= 0.25:
                 msg_ids_set.add(msg_id)
                 all_msg_logs.close()
                 return
-            message = YandexBalaboba(last_msg_text).get_balaboba()
+            message = balaboba_answer(last_msg_text)
             if message is None:
                 return
 
@@ -233,8 +238,6 @@ while True:
     if int(time() - start) % 1800 == 0:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
     new_mem = listdir('memes')
-    new_ans_a = get_answers('txt/all_answers.txt')
-    new_ans_p = get_answers('txt/polina_answers.txt')
     if new_mem != mem_list:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} memes update')
         mem_list = new_mem
@@ -242,15 +245,18 @@ while True:
         for usr_id in correct_user_id_set:
             sending_msg(usr_id)
     except vk_messages.Exception_MessagesAPI as ex:
-        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}')
+        print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")}\n{ex}')
+        logger.exception(ex)
         sleep(10)
     except AttributeError:
         print(f'{datetime.now().strftime("<%d-%m-%Y %H:%M:%S>")} error, trying login again')
         remove('sessions/' + listdir('sessions')[0])
         messages = MessagesAPI(login=LOGIN, password=PASSWORD, two_factor=False, cookies_save_path='sessions/')
-    except RemoteDisconnected:
+    except RemoteDisconnected as ex:
+        logger.exception(ex)
         pass
-    except ConnectionError:
+    except ConnectionError as ex:
+        logger.exception(ex)
         pass
     except Exception as e:
         logger.exception(e)

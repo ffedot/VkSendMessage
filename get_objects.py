@@ -168,7 +168,7 @@ def get_weather_today():
     try:
         res_in_json = res.json()
     except json.decoder.JSONDecodeError:
-        return get_weather_pyowm()
+        return "Нет погоды, хз почему"
 
     temp = res_in_json['fact']['temp']
     condition_dict = {
@@ -272,15 +272,6 @@ def get_btc_price():
     data = json.loads(req.text)
     price = data['result']['Ask']
     return '1 BTC = {0:,} $'.format(int(price))
-
-
-def get_weather_pyowm():
-    config = get_default_config()
-    config['language'] = 'ru'
-    owm = pyowm.OWM(PYOWM_KEY, config)
-    w = owm.weather_manager().weather_at_place('Vladivostok').weather
-    temp_c = int(w.temperature('celsius')['temp'])
-    return f'В городе Владивосток {temp_c}°C, {w.detailed_status}'
 
 
 def translate(message: str) -> str:
