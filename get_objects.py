@@ -300,4 +300,39 @@ def balaboba_answer(message: str) -> str:
     text = json.loads(res)['text']
     return text
 
+#
+# sorry that i нарыгал
+#
 
+# это оставлю в коментах, сам разберешься, твой agent у меня не работает ну или я не понял
+# URL = 'https://www.google.com/search?q=все+этапы+фор мулы+1+2021&client=opera&sxsrf=ALeKk00HzYeKPhIUMfUd62EteEJtszzR5w:1625661176072&ei=-J7lYM7wA-SErwS5tb3oDg&start=0&sa=N&ved=2ahUKEwjOzLLn-9DxAhVkwosKHblaD-04ChDy0wN6BAgBEDs&biw=564&bih=794&dpr=1.25'
+# HEADERS = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36 OPR/77.0.4054.172',
+#            'accept': '*/*'}
+
+def get_content_list(html: str) -> list:
+    """
+    :param html: requests.models.Response.text
+    :return: list: list[{data: data, track:text}, ...]
+    """
+    soup = BeautifulSoup(html, 'html.parser')
+    items = soup.find_all('div', class_='tsp-edsvt')
+    content = []
+
+    for item in items:
+        content.append({
+            'track': item.find('a').get_text(),
+            'data': item.find('span', class_='tsp-di tsp-dt tsp-cp').get_text(),
+        })
+
+    dictionary = content[0]
+    track = dictionary['track']
+    data = dictionary['data']
+
+    return f'Гонка на трассе {track}  {data}'
+
+# нарыгаю тебе вот этого еще, интегрировать в функцию у меня не получилось
+# html = requests.get(URL, headers=HEADERS)
+# if html.status_code == 200:
+#     get_content_list(html.text)
+# else:
+#         print(f'Error {html.status_code}')
